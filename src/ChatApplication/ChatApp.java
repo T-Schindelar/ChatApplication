@@ -6,14 +6,14 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-public class Main extends Application {
+public class ChatApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        // get roots
+        // get root
         Parent loginFormRoot = FXMLLoader.load(getClass().getResource("Resource/loginForm.fxml"));
 
-        // show
+        // show and start controller
         primaryStage.setTitle("Chatroom");
         primaryStage.setScene(new Scene(loginFormRoot));
         primaryStage.show();
