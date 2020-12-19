@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane prefHeight="560.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="ChatApplication.Controller.ServerController">
+    <columnConstraints>
+        <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="331.0" minWidth="135.0" prefWidth="331.0" />
+        <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="473.0" minWidth="269.0" prefWidth="269.0" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints valignment="TOP" vgrow="SOMETIMES" />
+        <RowConstraints valignment="TOP" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="322.0" minHeight="41.0" prefHeight="256.0" valignment="TOP" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="369.0" minHeight="67.0" prefHeight="93.0" valignment="TOP" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="164.0" minHeight="53.0" prefHeight="99.0" valignment="TOP" vgrow="SOMETIMES" />
+      <RowConstraints valignment="TOP" vgrow="SOMETIMES" />
+    </rowConstraints>
+    <children>
+        <MenuBar GridPane.columnSpan="2">
+            <menus>
+                <Menu mnemonicParsing="false" text="File">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="Close" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Edit">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="Delete" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="About" />
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+      <TextField fx:id="txtFieldStateServer" GridPane.rowIndex="1">
+         <GridPane.margin>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </GridPane.margin>
+      </TextField>
+      <Label contentDisplay="TOP" layoutX="351.0" layoutY="352.0" text="Serverlog" GridPane.rowIndex="2">
+         <GridPane.margin>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </GridPane.margin>
+      </Label>
+        <TextArea fx:id="txtAreaServerlog" editable="false" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="2" GridPane.rowSpan="4">
+            <GridPane.margin>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="30.0" />
+            </GridPane.margin>
+        </TextArea>
+        <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.rowSpan="2">
+            <tabs>
+                <Tab text="Benutzer">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <children>
+                                <ListView fx:id="listUser" layoutY="-2.0" prefHeight="297.0" prefWidth="280.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <opaqueInsets>
+                                        <Insets />
+                                    </opaqueInsets>
+                                </ListView>
+                            </children></AnchorPane>
+                    </content>
+                </Tab>
+                <Tab text="Räume">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <children>
+                                <ListView fx:id="listRooms" layoutX="40.0" layoutY="6.0" prefHeight="297.0" prefWidth="280.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                            </children></AnchorPane>
+                    </content>
+                </Tab>
+            </tabs>
+            <GridPane.margin>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </GridPane.margin>
+        </TabPane>
+      <Label contentDisplay="TOP" layoutX="324.0" layoutY="375.0" text="Informationen" GridPane.columnIndex="1" GridPane.rowIndex="3">
+         <GridPane.margin>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </GridPane.margin>
+      </Label>
+      <TextArea fx:id="txtAreaInfo" editable="false" layoutX="20.0" layoutY="63.0" prefHeight="50.0" style="-fx-background-color: none;" GridPane.columnIndex="1" GridPane.rowIndex="3">
+         <GridPane.margin>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="30.0" />
+         </GridPane.margin>
+      </TextArea>
+      <Label contentDisplay="TOP" text="Aufgaben" GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.valignment="TOP">
+         <GridPane.margin>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </GridPane.margin>
+      </Label>
+      <TextField fx:id="txtFieldTask" GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.valignment="TOP">
+         <GridPane.margin>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="30.0" />
+         </GridPane.margin>
+      </TextField>
+      <ChoiceBox fx:id="chBoxTasks" prefHeight="26.0" prefWidth="202.0" GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.valignment="BOTTOM">
+         <GridPane.margin>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </GridPane.margin>
+      </ChoiceBox>
+      <Button fx:id="btnTask" mnemonicParsing="false" onAction="#btnTask" text="OK" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="4" GridPane.valignment="BOTTOM">
+         <GridPane.margin>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </GridPane.margin>
+      </Button>
+      <TextField fx:id="txtFieldStateTask" GridPane.columnIndex="1" GridPane.rowIndex="5">
+         <GridPane.margin>
+            <Insets bottom="10.0" left="10.0" right="10.0" />
+         </GridPane.margin>
+      </TextField>
+    </children>
+</GridPane>
