@@ -2,6 +2,8 @@ package ChatApplication.Library;
 
 import ChatApplication.Server;
 
+import java.io.IOException;
+
 public class UserHandler implements Runnable {
     private final Server server;
     private final User user;
@@ -35,12 +37,26 @@ public class UserHandler implements Runnable {
                 }
             } catch (Exception e) {
                 System.out.println(user + " left.");
+                server.removeUser(user);
+                try {
+                    server.broadcastMessages(new Message("Server", user + " has left the server."));
+                    server.broadcastAllUsers();
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
                 return;
             }
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
                 System.out.println(user + " left.");
+                server.removeUser(user);
+                try {
+                    server.broadcastMessages(new Message("Server", user + " has left the server."));
+                    server.broadcastAllUsers();
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
                 return;
             }
         }
