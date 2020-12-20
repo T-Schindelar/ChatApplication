@@ -4,8 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<GridPane prefHeight="560.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="ChatApplication.Controller.ServerController">
+<GridPane prefHeight="560.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ChatApplication.Controller.ServerController">
     <columnConstraints>
         <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="331.0" minWidth="135.0" prefWidth="331.0" />
         <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="473.0" minWidth="269.0" prefWidth="269.0" />
@@ -38,7 +37,7 @@
                 </Menu>
             </menus>
         </MenuBar>
-      <TextField fx:id="txtFieldStateServer" GridPane.rowIndex="1">
+      <TextField fx:id="txtFieldStateServer" focusTraversable="false" GridPane.rowIndex="1">
          <GridPane.margin>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </GridPane.margin>
@@ -85,7 +84,7 @@
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </GridPane.margin>
       </Label>
-      <TextArea fx:id="txtAreaInfo" editable="false" layoutX="20.0" layoutY="63.0" prefHeight="50.0" style="-fx-background-color: none;" GridPane.columnIndex="1" GridPane.rowIndex="3">
+      <TextArea fx:id="txtAreaInfo" editable="false" focusTraversable="false" layoutX="20.0" layoutY="63.0" prefHeight="50.0" style="-fx-background-color: none;" GridPane.columnIndex="1" GridPane.rowIndex="3">
          <GridPane.margin>
             <Insets bottom="10.0" left="10.0" right="10.0" top="30.0" />
          </GridPane.margin>
@@ -110,7 +109,7 @@
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </GridPane.margin>
       </Button>
-      <TextField fx:id="txtFieldStateTask" GridPane.columnIndex="1" GridPane.rowIndex="5">
+      <TextField fx:id="txtFieldStateTask" focusTraversable="false" GridPane.columnIndex="1" GridPane.rowIndex="5">
          <GridPane.margin>
             <Insets bottom="10.0" left="10.0" right="10.0" />
          </GridPane.margin>
