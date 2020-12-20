@@ -63,17 +63,18 @@ class ReceivedMessagesHandler implements Runnable {
     }
 
     public void populateUserList(String[] list) {
+        this.listUser.getItems().clear();
         for (String item : list) {
-            if (!this.listUser.getItems().contains(item)) {
-                this.listUser.getItems().add(item);
-            }
+            this.listUser.getItems().add(item.strip());
+//            if (!this.listUser.getItems().contains(item)) {
+//            }
         }
     }
 
     public void populateRoomsList(String[] list) {
         for (String item : list) {
             if (!this.listRooms.getItems().contains(item)) {
-                this.listRooms.getItems().add(item);
+                this.listRooms.getItems().add(item.strip());
             }
         }
     }
