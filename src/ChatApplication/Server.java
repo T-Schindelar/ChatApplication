@@ -49,9 +49,9 @@ public class Server {
                 Account loginAccount = (Account) client.getOin().readObject();
                 // registration
                 boolean registrationSuccessful = true;
-                if (message.getText().toLowerCase().equals("r")) {
+                if (message.getText().equals("r")) {
                     for (Account account : this.accounts) {
-                        if (account.getName().toLowerCase().equals(loginAccount.getName().toLowerCase())) {
+                        if (account.getName().equalsIgnoreCase(loginAccount.getName())) {
                             sendMessage(client, new Message("Server", "Error: User already exists. " +
                                     "Try another name."));
                             registrationSuccessful = false;
@@ -86,7 +86,7 @@ public class Server {
     // checks if client is already logged in
     public boolean isLoggedIn(Account account) {
         for (User client : clients) {
-            if (client.getName().toLowerCase().equals(account.getName().toLowerCase())) {
+            if (client.getName().equalsIgnoreCase(account.getName())) {
                 return true;
             }
         }
@@ -109,7 +109,7 @@ public class Server {
     // send list of clients to all Users
     public void broadcastAllUsers() throws IOException {
         for (User client : this.clients) {
-            client.getOout().writeObject(new Message("Server", this.clients.toString()));       // ToDo: evtl. Liste später verschicken
+            client.getOout().writeObject(new Message("Server", this.clients.toString()));
         }
     }
 
