@@ -83,9 +83,10 @@ public class Client {
 
     // handles login process
     public boolean login(String mode, String name, String password) throws IOException, ClassNotFoundException {
+        if (name.isEmpty() || password.isEmpty()) return false;
         this.oout.writeObject(new Message("", mode));
         this.oout.flush();
-        this.oout.writeObject(new Account(name, password));
+        this.oout.writeObject(new Account(name.strip(), password));
         this.oout.flush();
 
         // check for a valid login, E=Error
