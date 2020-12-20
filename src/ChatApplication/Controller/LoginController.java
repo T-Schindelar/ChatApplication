@@ -39,7 +39,7 @@ public class LoginController implements Initializable {
             loader.setController(new ChatController(client));
 
             // show new window
-            currentWindow.setTitle("Chatroom");
+            currentWindow.setTitle("ChatApp");
             currentWindow.setScene(new Scene(loader.load()));
             currentWindow.show();
         }
