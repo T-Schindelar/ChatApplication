@@ -14,9 +14,16 @@ public class ChatApp extends Application {
         Parent loginFormRoot = FXMLLoader.load(getClass().getResource("Resource/loginForm.fxml"));
 
         // show and start controller
-        primaryStage.setTitle("Chatroom");
+        primaryStage.setTitle("ChatApp");
         primaryStage.setScene(new Scene(loginFormRoot));
         primaryStage.show();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        super.stop();
+        System.out.println("stop");     // todo
+        System.exit(0);
     }
 
     public static void main(String[] args) {
