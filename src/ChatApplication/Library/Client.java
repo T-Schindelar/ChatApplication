@@ -35,10 +35,10 @@ public class Client {
         this.port = port;
         // connect client to server
         this.socket = new Socket(host, port);
-        System.out.println("Client successfully connected to server!");
         // create object input/output streams
         this.oout = new ObjectOutputStream(socket.getOutputStream());
         this.oin = new ObjectInputStream(socket.getInputStream());
+        System.out.println("Client successfully connected to server!");
     }
 
     // todo: dekonstruktor schreiben
@@ -108,6 +108,10 @@ public class Client {
     public String getName() {
         return name;
     }
+
+    public int getPort() { return this.port; }
+
+    public String getHost() { return this.host; }
 
     // setter
     public void setName(String name) {

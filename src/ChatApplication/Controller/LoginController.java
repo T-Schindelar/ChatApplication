@@ -6,10 +6,13 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import ChatApplication.Library.Client;
 
 import java.net.URL;
+import java.security.Key;
 import java.util.ResourceBundle;
 
 public class LoginController implements Initializable {
@@ -56,11 +59,32 @@ public class LoginController implements Initializable {
 
             // setup new window
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../Resource/chatWindow.fxml"));
-            loader.setController(new ChatController(client));
+            ChatController c = new ChatController(client);
+            loader.setController(c);
 
             // show new window
             currentWindow.setTitle("Chatroom");
-            currentWindow.setScene(new Scene(loader.load()));
+            Scene s = new Scene(loader.load());
+            //damit können KeyEvents abgefangen werden um unser eigenes Verhalten festzulegen
+            s.addEventFilter(KeyEvent.KEY_PRESSED, (KeyEvent event) -> {
+                try {
+                    if (event.getCode() == KeyCode.ENTER && c.txtFieldMessage.isFocused()) {
+                        c.sendMessage();
+                    }
+                    if (event.getCode() == KeyCode.ENTER && c.txtFieldNickname.isFocused()) {
+                        c.sendNickname();
+                    }
+                    //todo: tab cycle event handling
+                    //if (event.getCode() == KeyCode.TAB){
+                    //
+                    //}
+                    event.consume();
+                }
+                catch(Exception e){
+                    e.printStackTrace();
+                }
+            });
+            currentWindow.setScene(s);
             currentWindow.show();
         }
         else {
