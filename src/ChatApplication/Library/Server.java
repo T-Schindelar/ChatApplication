@@ -22,10 +22,11 @@ import java.util.List;
         }
 
         // todo löschen wenn nicht benötigt
+
         //    public void run() throws IOException {
         //        ServerSocket server = new ServerSocket(this.port);
         //        System.out.println("Port " + port + " is now open.");
-        ////        txtFieldStateServer.setText("Port " + port + " is now open.");
+        //        txtFieldStateServer.setText("Port " + port + " is now open.");
         //
         //        while (true) {
         //            // accepts a new client
@@ -39,7 +40,6 @@ import java.util.List;
         //            new Thread(new UserHandler(this, client)).start();
         //        }
         //    }
-
         //public void run(){
             //leer, da hier nichts gemacht werden muss
         //}
@@ -52,12 +52,6 @@ import java.util.List;
             // create a new initial client
             return new User(clientSocket, "", oin);
         }
-
-        // todo löschen wenn nicht benötigt
-        //    public Thread createThreadUserHandler(User client, TextArea txtAreaServerlog, TextArea txtAreaInfo,
-        //                                          TextField txtFieldStateServer, ListView listUser, ListView listRooms) {
-        //        return new Thread(new UserHandler(this, client));
-        //    }
 
         // handles login process and account management
         public void accountAndEntryManagement(User client) {

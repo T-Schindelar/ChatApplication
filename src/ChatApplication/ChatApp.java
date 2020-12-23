@@ -24,17 +24,9 @@ public class ChatApp extends Application {
 
     @Override
     public void stop() throws Exception {
-        try {
-            super.stop();
-        }
-        catch (Exception e){
-            e.printStackTrace();
-            System.out.println("stop"); // todo
-        }
-
-
-
-        //System.exit(0);
+        super.stop();
+        System.exit(0);
+        System.out.println("stop"); // todo löschen
     }
 
     public static void main(String[] args) {

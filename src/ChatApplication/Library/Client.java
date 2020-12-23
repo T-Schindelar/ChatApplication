@@ -44,6 +44,7 @@ public class Client {
     // todo: dekonstruktor schreiben
 
 
+    // todo löschen
     public void run() throws IOException, ConnectException {
 //        // connect client to server
 //        Socket socket = new Socket(host, port);
@@ -94,23 +95,26 @@ public class Client {
         return message.getText().charAt(0) != 'E';
     }
 
+    // returns an new thread for the ReceivedMessagesHandler
     public Thread createThreadReceivedMessagesHandler(TextArea txtAreaChat, TextArea txtAreaState,
                                                       ListView listRooms, ListView listUser) {
         return new Thread(new ReceivedMessagesHandler(this.oin, this.name, txtAreaChat, txtAreaState, listRooms, listUser));
     }
 
     // sends object via output stream
-    public void sendObject(Object object) throws IOException {
-        this.oout.writeObject(object);
+    public void sendObject(Object object) {
+        try {
+            this.oout.writeObject(object);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // getter
     public String getName() {
         return name;
     }
-
     public int getPort() { return this.port; }
-
     public String getHost() { return this.host; }
 
     // setter
