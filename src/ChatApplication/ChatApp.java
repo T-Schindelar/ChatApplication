@@ -4,7 +4,6 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 public class ChatApp extends Application {
@@ -25,8 +24,8 @@ public class ChatApp extends Application {
     @Override
     public void stop() throws Exception {
         super.stop();
-        System.exit(0);
         System.out.println("stop"); // todo löschen
+        System.exit(0);
     }
 
     public static void main(String[] args) {
