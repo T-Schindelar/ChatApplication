@@ -15,6 +15,9 @@ public class Account implements java.io.Serializable {
     public String getName() {
         return name;
     }
+    public String getPassword() {
+        return password;
+    }
 
     @Override
     public boolean equals(Object o) {
