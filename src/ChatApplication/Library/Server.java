@@ -9,15 +9,17 @@ import java.util.List;
 
 public class Server {//implements Runnable{
     private final int port;
+    private final ServerSocket server;
     private final List<User> clients;
     private final List<Account> accounts;
-    private final ServerSocket server;
+    private final AccountDbService service;
 
     public Server(int port) throws Exception {
         this.port = port;
-        this.clients = new ArrayList<User>();
-        this.accounts = new ArrayList<Account>();
         this.server = new ServerSocket(this.port);
+        this.clients = new ArrayList<User>();
+        this.service = new AccountDbService();
+        this.accounts = this.service.getAllAccounts();
         System.out.println("Port " + port + " is now open.");
     }
 
@@ -75,6 +77,7 @@ public class Server {//implements Runnable{
                         client.setName(loginAccount.getName());
                         addUser(client);
                         addAccount(loginAccount);
+                        this.service.set(loginAccount);
                         sendMessage(client, new Message("Server", "\n------ Welcome ------"));
                         return;
                     }
