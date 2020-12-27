@@ -85,6 +85,7 @@ public class AccountDbService {
         }
 
     }
+
     public void close() {
         try {
             this.connection.close();

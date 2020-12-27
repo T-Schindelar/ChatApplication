@@ -25,15 +25,13 @@
     <show-object-properties value="true" />
     <loaded-nodes>
       <connection connection-id="671c5659-74bd-4dba-9161-9f0dfc3f72ec">
-        <schema name="main" object-types="table, view" />
+        <schema name="main" object-types="column, table, view" />
       </connection>
     </loaded-nodes>
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="671c5659-74bd-4dba-9161-9f0dfc3f72ec">
-      <console name="ChatApplicationDB" type="STANDARD" schema="main" session="Main"><![CDATA[SELECT * FROM Accounts
-
-Update Accounts Set Password = '12' WHERE Name = 'Tobias']]></console>
+      <console name="ChatApplicationDB" type="STANDARD" schema="main" session="Main"><![CDATA[SELECT * FROM Accounts]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
@@ -83,7 +81,7 @@ Update Accounts Set Password = '12' WHERE Name = 'Tobias']]></console>
           <port value="1234" />
           <database value="database" />
           <files>
-            <file path="$PROJECT_DIR$/src/ChatApplication/ChatApplicationDB" schema="main" />
+            <file path="$PROJECT_DIR$/src/ChatApplication/Resource/ChatApplicationDB" schema="main" />
           </files>
           <type value="NONE" />
           <user value="" />
