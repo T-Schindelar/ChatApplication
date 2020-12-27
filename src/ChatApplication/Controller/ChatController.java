@@ -1,16 +1,14 @@
 package ChatApplication.Controller;
 
-import javafx.event.ActionEvent;
-import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import ChatApplication.Library.Client;
 import ChatApplication.Library.Message;
+import javafx.event.ActionEvent;
+import javafx.fxml.Initializable;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class ChatController implements Initializable {
@@ -47,6 +45,30 @@ public class ChatController implements Initializable {
 
     public void btnSendNickname(ActionEvent actionEvent) {
         sendNickname();
+    }
+
+    public void menuItemChangeName() {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Name ändern");
+        dialog.setHeaderText("");
+        dialog.setContentText("Bitte neuen Namen eingeben");
+        Optional<String> result = dialog.showAndWait();
+        if (result.isPresent()) {
+            System.out.println(result.get());
+            client.sendObject(new Message(client.getName(), "change_name_to_" + result.get()));
+        }
+    }
+
+    public void menuItemChangePassword() {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Passwort ändern");
+        dialog.setHeaderText("");
+        dialog.setContentText("Bitte neuen Passwort eingeben");
+        Optional<String> result = dialog.showAndWait();
+        if (result.isPresent()) {
+            System.out.println(result.get());
+            client.sendObject(new Message(client.getName(), "change_password_to_" + result.get()));
+        }
     }
 
     public void sendMessage() {
