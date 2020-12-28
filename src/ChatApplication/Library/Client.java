@@ -83,28 +83,28 @@ public class Client {
     }
 
     // handles login process
-    public boolean login(String mode, String name, String password) throws IOException, ClassNotFoundException {
-        if (name.isEmpty() || password.isEmpty()) return false;
-        this.oout.writeObject(new Message("", mode));
-        this.oout.flush();
-        this.oout.writeObject(new Account(name.strip(), password));
-        this.oout.flush();
+    public Message login(Mode mode, String name, String password) throws IOException, ClassNotFoundException {
+        if (name.isEmpty() || password.isEmpty())
+            return new Message("", Mode.ERROR, "Bitte Namen und Passwort eingeben!");
+        oout.writeObject(mode);
+        oout.flush();
+        oout.writeObject(new Account(name.strip(), password));
+        oout.flush();
 
-        // check for a valid login, E=Error
         Message message = (Message) oin.readObject();
-        return message.getText().charAt(0) != 'E';
+        return message;
     }
 
     // returns an new thread for the ReceivedMessagesHandler
     public Thread createThreadReceivedMessagesHandler(TextArea txtAreaChat, TextArea txtAreaState,
                                                       ListView listRooms, ListView listUser) {
-        return new Thread(new ReceivedMessagesHandler(this.oin, this.name, txtAreaChat, txtAreaState, listRooms, listUser));
+        return new Thread(new ReceivedMessagesHandler(oin, name, txtAreaChat, txtAreaState, listRooms, listUser));
     }
 
     // sends object via output stream
     public void sendObject(Object object) {
         try {
-            this.oout.writeObject(object);
+            oout.writeObject(object);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -114,8 +114,8 @@ public class Client {
     public String getName() {
         return name;
     }
-    public int getPort() { return this.port; }
-    public String getHost() { return this.host; }
+    public int getPort() { return port; }
+    public String getHost() { return host; }
 
     // setter
     public void setName(String name) {

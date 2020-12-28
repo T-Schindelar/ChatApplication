@@ -1,13 +1,16 @@
 package ChatApplication.Controller;
 
+import ChatApplication.Library.Client;
+import ChatApplication.Library.Message;
+import ChatApplication.Library.Mode;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import ChatApplication.Library.Client;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -29,27 +32,28 @@ public class LoginController implements Initializable {
 
     public void btnLogin(ActionEvent actionEvent) throws Exception {
         // login() returns true for a valid login/registration
-        if (this.client.login("l", txtFieldName.getText(), pswFieldPassword.getText())) {
-            changeWindow(actionEvent);
+        Message message = client.login(Mode.LOGIN, txtFieldName.getText(), pswFieldPassword.getText());
+        if (message.getMode() == Mode.ERROR) {
+            txtFieldError.setText(message.getText());
         }
         else {
-            txtFieldError.setText("Fehlgeschlagen, versuchen Sie es erneut.");
+            changeWindow(actionEvent);
         }
     }
 
     public void btnRegistration(ActionEvent actionEvent) throws Exception {
-        // login() returns true for a valid login/registration
-        if (this.client.login("r", txtFieldName.getText(), pswFieldPassword.getText())) {
-            changeWindow(actionEvent);
+        Message message = client.login(Mode.REGISTRATION, txtFieldName.getText(), pswFieldPassword.getText());
+        if (message.getMode() == Mode.ERROR) {
+            txtFieldError.setText(message.getText());
         }
         else {
-            txtFieldError.setText("Fehlgeschlagen, versuchen Sie es erneut.");
+            changeWindow(actionEvent);
         }
     }
 
     // changes the window from login to chat
     private void changeWindow(ActionEvent actionEvent) throws Exception {
-        this.client.setName(txtFieldName.getText());
+        client.setName(txtFieldName.getText());
         // get current window stage information
         Stage currentWindow = (Stage) (((Node) actionEvent.getSource()).getScene().getWindow());
 

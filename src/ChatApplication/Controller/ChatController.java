@@ -2,6 +2,7 @@ package ChatApplication.Controller;
 
 import ChatApplication.Library.Client;
 import ChatApplication.Library.Message;
+import ChatApplication.Library.Mode;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -31,9 +32,6 @@ public class ChatController implements Initializable {
     public void initialize(URL location, ResourceBundle resource) {
         client.createThreadReceivedMessagesHandler(txtAreaChat, txtAreaState, listRooms, listUser).start();
         txtAreaState.setText(String.format("Verbunden mit %s:%d als %s", client.getHost(), client.getPort(), client.getName()));
-        txtFieldNickname.setOnKeyPressed(keyEvent -> {
-            if(keyEvent.getCode() == KeyCode.ENTER)
-                sendNickname(); } );
         txtFieldMessage.setOnKeyPressed(keyEvent -> {
             if(keyEvent.getCode() == KeyCode.ENTER)
                 sendMessage(); } );
@@ -43,10 +41,6 @@ public class ChatController implements Initializable {
         sendMessage();
     }
 
-    public void btnSendNickname(ActionEvent actionEvent) {
-        sendNickname();
-    }
-
     public void menuItemChangeName() {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Name ändern");
@@ -54,8 +48,8 @@ public class ChatController implements Initializable {
         dialog.setContentText("Bitte neuen Namen eingeben");
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
-            System.out.println(result.get());
-            client.sendObject(new Message(client.getName(), "change_name_to_" + result.get()));
+            client.sendObject(new Message(client.getName(), Mode.CHANGE_NAME,result.get()));
+            client.setName(result.get());
         }
     }
 
@@ -66,18 +60,12 @@ public class ChatController implements Initializable {
         dialog.setContentText("Bitte neuen Passwort eingeben");
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
-            System.out.println(result.get());
-            client.sendObject(new Message(client.getName(), "change_password_to_" + result.get()));
+            client.sendObject(new Message(client.getName(), Mode.CHANGE_PASSWORD, result.get()));
         }
     }
 
     public void sendMessage() {
-        this.client.sendObject(new Message(client.getName(), txtFieldMessage.getText()));
-        txtFieldMessage.clear();
-    }
-
-    public void sendNickname() {
-        this.client.sendObject(new Message(client.getName(), "change nickname to" + txtFieldNickname.getText()));
+        client.sendObject(new Message(client.getName(), Mode.MESSAGE, txtFieldMessage.getText()));
         txtFieldMessage.clear();
     }
 }

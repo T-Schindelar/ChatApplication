@@ -19,6 +19,11 @@ public class Account implements java.io.Serializable {
         return password;
     }
 
+    // setter
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

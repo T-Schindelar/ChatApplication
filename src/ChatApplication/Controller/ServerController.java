@@ -26,7 +26,7 @@ public class ServerController implements Initializable, Runnable{
     public void initialize(URL location, ResourceBundle resource) {
         try {
             this.server = new Server(5000);
-            txtFieldStateServer.setText("Port " + this.server.getPort() + " ist offen.");
+            txtFieldStateServer.setText("Port " + server.getPort() + " ist offen.");
             new Thread(this).start(); //Thread wird erzeugt
         } catch (Exception e) {
             e.printStackTrace();
@@ -36,8 +36,8 @@ public class ServerController implements Initializable, Runnable{
     public void run(){
         try {
             while (true) {
-                User client = this.server.listenForNewClients();
-                new Thread(new UserHandler(this.server, client, txtAreaServerlog,
+                User client = server.listenForNewClients();
+                new Thread(new UserHandler(server, client, txtAreaServerlog,
                         txtFieldStateServer, listUser, listRooms)).start();
             }
         }

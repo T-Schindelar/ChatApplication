@@ -12,7 +12,7 @@ public class AccountDbService {
         try {
             Class.forName("org.sqlite.JDBC");
             this.connection = DriverManager.getConnection("jdbc:sqlite:src/ChatApplication/Resource/ChatApplicationDB");
-            this.statement = this.connection.createStatement();
+            this.statement = connection.createStatement();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -22,16 +22,16 @@ public class AccountDbService {
         try {
             String sql = String.format("INSERT INTO Accounts (Name, Password)" +
                     "VALUES ('%s', '%s')", account.getName(), account.getPassword());
-            this.statement.executeUpdate(sql);
+            statement.executeUpdate(sql);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
     }
 
-    public Account get(Account account) {
+    public Account get(String name) {
         try {
-            String sql = String.format("SELECT * FROM Accounts WHERE Name = '%s'", account.getName());
-            ResultSet result = this.statement.executeQuery(sql);
+            String sql = String.format("SELECT * FROM Accounts WHERE Name = '%s'", name);
+            ResultSet result = statement.executeQuery(sql);
             if (result.next())
                 return new Account(result.getString("Name"), result.getString("Password"));
             else
@@ -46,7 +46,7 @@ public class AccountDbService {
         try {
             List<Account> resultList = new ArrayList<>();
             String sql = "SELECT * FROM Accounts";
-            ResultSet result = this.statement.executeQuery(sql);
+            ResultSet result = statement.executeQuery(sql);
             while (result.next())
                 resultList.add(new Account(result.getString("Name"), result.getString("Password")));
             return resultList;
@@ -56,30 +56,30 @@ public class AccountDbService {
         }
     }
 
-    public void delete(Account account) {
+    public void delete(String name) {
         try {
-            String sql = String.format("DELETE FROM Accounts WHERE Name = '%s';", account.getName());
-            this.statement.executeUpdate(sql);
+            String sql = String.format("DELETE FROM Accounts WHERE Name = '%s';", name);
+            statement.executeUpdate(sql);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
     }
 
-    public void updateName(Account account, String name) {
+    public void updateName(String oldName, String newName) {
         try {
             String sql = String.format("Update Accounts Set Name = '%s' WHERE Name = '%s'",
-                    name, account.getName());
-            this.statement.executeUpdate(sql);
+                    newName, oldName);
+            statement.executeUpdate(sql);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
     }
 
-    public void updatePassword(Account account, String password) {
+    public void updatePassword(String name, String newPassword) {
         try {
             String sql = String.format("Update Accounts Set Password = '%s' WHERE Name = '%s'",
-                    password, account.getName());
-            this.statement.executeUpdate(sql);
+                    newPassword, name);
+            statement.executeUpdate(sql);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -88,7 +88,7 @@ public class AccountDbService {
 
     public void close() {
         try {
-            this.connection.close();
+            connection.close();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
