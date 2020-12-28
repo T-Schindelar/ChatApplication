@@ -7,26 +7,26 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Server {//implements Runnable{
+public class Server {
     private final int port;
     private final ServerSocket server;
     private final List<User> clients;
-    private final List<Account> accounts;
+    private List<Account> accounts;
     private final AccountDbService service;
 
     public Server(int port) throws Exception {
         this.port = port;
-        this.server = new ServerSocket(this.port);
+        this.server = new ServerSocket(port);
         this.clients = new ArrayList<User>();
         this.service = new AccountDbService();
-        this.accounts = this.service.getAllAccounts();
-        System.out.println("Port " + port + " is now open.");
+        this.accounts = service.getAllAccounts();
+        System.out.println("Port " + port + " ist geöffnet.");
     }
 
     // todo löschen wenn nicht benötigt
 
     //    public void run() throws IOException {
-    //        ServerSocket server = new ServerSocket(this.port);
+    //        ServerSocket server = new ServerSocket(port);
     //        System.out.println("Port " + port + " is now open.");
     //        txtFieldStateServer.setText("Port " + port + " is now open.");
     //
@@ -39,7 +39,7 @@ public class Server {//implements Runnable{
     //            User client = new User(clientSocket, "", oin);
     //
     //            // create a new thread for logging in and incoming messages handling
-    //            new Thread(new UserHandler(this, client)).start();
+    //            new Thread(new UserHandler( client)).start();
     //        }
     //    }
     //public void run(){
@@ -59,16 +59,15 @@ public class Server {//implements Runnable{
     public void accountAndEntryManagement(User client) {
         try {
             while (true) {
-                // message contains command about registration (r) or login (l)
-                Message message = (Message) client.getOin().readObject();
+                Mode mode = (Mode) client.getOin().readObject();
                 Account loginAccount = (Account) client.getOin().readObject();
                 // registration
                 boolean registrationSuccessful = true;
-                if (message.getText().equals("r")) {
-                    for (Account account : this.accounts) {
+                if (mode == Mode.REGISTRATION) {
+                    for (Account account : accounts) {
                         if (account.getName().equalsIgnoreCase(loginAccount.getName())) {
-                            sendMessage(client, new Message("Server", "Error: User already exists. " +
-                                    "Try another name."));
+                            sendMessage(client, new Message("Server", Mode.ERROR, "Bitte wählen Sie " +
+                                    "einen anderen Namen."));
                             registrationSuccessful = false;
                             break;
                         }
@@ -77,20 +76,21 @@ public class Server {//implements Runnable{
                         client.setName(loginAccount.getName());
                         addUser(client);
                         addAccount(loginAccount);
-                        this.service.set(loginAccount);
-                        sendMessage(client, new Message("Server", "\n------ Welcome ------"));
+                        sendMessage(client, new Message("Server", Mode.MESSAGE,"\n------ Willkommen ------"));
                         return;
                     }
                 }
                 // login
                 else {
-                    if (this.accounts.contains(loginAccount) && !isLoggedIn(loginAccount)) {
+                    if (accounts.contains(loginAccount) && !isLoggedIn(loginAccount)) {
                         client.setName(loginAccount.getName());
                         addUser(client);
-                        sendMessage(client, new Message("Server", "\n----- Welcome back -----"));
+                        sendMessage(client, new Message("Server", Mode.MESSAGE,"\n----- Willkommen zurück " +
+                                "-----"));
                         return;
                     } else {
-                        sendMessage(client, new Message("Server", "Error: Login failed. Please try again"));
+                        sendMessage(client, new Message("Server",Mode.ERROR, "Fehler! Bitte versuchen Sie " +
+                                "es erneut."));
                     }
                 }
             }
@@ -116,7 +116,7 @@ public class Server {//implements Runnable{
 
     // send incoming message to all Users
     public void broadcastMessages(Message message) throws IOException {
-        for (User client : this.clients) {
+        for (User client : clients) {
             client.getOout().writeObject(message);
             client.getOout().flush();
         }
@@ -124,24 +124,42 @@ public class Server {//implements Runnable{
 
     // send list of clients to all Users
     public void broadcastAllUsers() throws IOException {
-        for (User client : this.clients) {
-            client.getOout().writeObject(new Message("Server", this.clients.toString()));
+        for (User client : clients) {
+            client.getOout().writeObject(new Message("Server", Mode.MESSAGE, clients.toString()));
         }
     }
 
-    // add a account to the list
+    // add a account to the list and to the database
     public void addAccount(Account account) {
-        this.accounts.add(account);
+        accounts.add(account);
+        service.set(account);
+    }
+
+    public void changeAccountName(String oldName, String newName) {
+        for (User client : clients) {
+            if (client.getName().equals(oldName))
+                client.setName(newName);
+        }
+        service.updateName(oldName, newName);
+        accounts = service.getAllAccounts();
+    }
+
+    public void changeAccountPassword(String name, String newPassword) {
+        service.updatePassword(name, newPassword);
+    }
+
+    public void deleteAccount(String name) {
+        service.delete(name);
     }
 
     // add a user to the list
     public void addUser(User user) {
-        this.clients.add(user);
+        clients.add(user);
     }
 
     // delete a user from the list
     public void removeUser(User user) {
-        this.clients.remove(user);
+        clients.remove(user);
     }
 
     // getter

@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public class UserHandler implements Runnable {
     private final Server server;
-    private final User user;
+    private User user;
     private final TextArea txtAreaServerlog;
     private final TextField txtFieldStateServer;
     private final ListView listUser;
@@ -27,8 +27,9 @@ public class UserHandler implements Runnable {
 
     public void run() {
         try {
-            this.server.accountAndEntryManagement(this.user);
-            this.server.broadcastMessages(new Message("Server", user + " joined the server."));
+            this.server.accountAndEntryManagement(user);
+            this.server.broadcastMessages(new Message("Server", Mode.MESSAGE, user +
+                    " ist dem Chat beigetreten."));
             this.server.broadcastAllUsers();
         } catch (Exception e) {
             e.printStackTrace();
@@ -37,23 +38,42 @@ public class UserHandler implements Runnable {
             try {
                 // gets client messages
                 Message message = (Message) user.getOin().readObject();
-//                System.out.println(message);            // todo löschen
-                addMessageToTxtAreaServerlog(message);
 
-                // checks end of thread
-                if (message.getText().equals("close")) {
-                    server.removeUser(user);
-                    server.broadcastMessages(new Message("Server", user + " has left the server."));
-                    server.broadcastAllUsers();
-                } else {
-                    server.broadcastMessages(message);
+                // checks message mode
+                switch (message.getMode()) {
+                    case MESSAGE:
+                        server.broadcastMessages(message);
+                        addMessageToTxtAreaServerlog(message);
+                        break;
+                    case LOGOUT:
+                        server.removeUser(user);
+                        server.broadcastMessages(new Message("Server", Mode.MESSAGE, user +
+                                " hat den Chat verlassen."));
+                        server.broadcastAllUsers();
+                        break;
+                    case CHANGE_NAME:
+                        String oldName = user.getName();
+                        String newName = message.getText();
+                        user.setName(newName);
+                        server.changeAccountName(oldName, newName);
+                        server.broadcastMessages(new Message("Server", Mode.MESSAGE, oldName +
+                                " hat den Namen zu " + newName + " geändert."));
+                        server.broadcastAllUsers();
+                        break;
+                    case CHANGE_PASSWORD:
+                        server.changeAccountPassword(user.getName(), message.getText());
+                        server.sendMessage(user, new Message("server", Mode.MESSAGE,"Änderung erfolgreich."));
+                        break;
+                    default:
+                        break;
                 }
             } catch (Exception e) {
-                System.out.println(user + " left.");
-                addMessageToTxtAreaServerlog(new Message(user.toString(), "left"));
+                System.out.println(user + " hat den Chat verlassen.");
+                addMessageToTxtAreaServerlog(new Message(user.getName(), Mode.LOGOUT, " hat den Chat verlassen."));
                 server.removeUser(user);
                 try {
-                    server.broadcastMessages(new Message("Server", user + " has left the server."));
+                    server.broadcastMessages(new Message("Server", Mode.LOGOUT,user +
+                            " hat den Chat verlassen."));
                     server.broadcastAllUsers();
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
@@ -63,11 +83,12 @@ public class UserHandler implements Runnable {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
-                System.out.println(user + " left.");
-                addMessageToTxtAreaServerlog(new Message(user.toString(), "left"));
+                System.out.println(user + " hat den Chat verlassen..");
+                addMessageToTxtAreaServerlog(new Message(user.getName(), Mode.LOGOUT, " hat den Chat verlassen."));
                 server.removeUser(user);
                 try {
-                    server.broadcastMessages(new Message("Server", user + " has left the server."));
+                    server.broadcastMessages(new Message("Server", Mode.LOGOUT,user +
+                            " hat den Chat verlassen."));
                     server.broadcastAllUsers();
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
@@ -76,6 +97,8 @@ public class UserHandler implements Runnable {
             }
         }
     }
+
+    // add message to server log
     public void addMessageToTxtAreaServerlog(Message message) {
         txtAreaServerlog.setText(txtAreaServerlog.getText() + message + "\n");
     }
