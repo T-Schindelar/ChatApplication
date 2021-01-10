@@ -8,12 +8,14 @@ public class Message implements java.io.Serializable {
     private final String client;
     private final Mode mode;
     private final String text;
+    private final String room;
 
-    public Message(String client, Mode mode, String text) {
+    public Message(String client, Mode mode, String text, String room) {
         this.timestamp = new SimpleDateFormat("HH:mm").format(new Date());
         this.client = client;
         this.mode = mode;
         this.text = text;
+        this.room = room;
     }
 
     // getter
@@ -26,6 +28,7 @@ public class Message implements java.io.Serializable {
     public String getText() {
         return text;
     }
+    public String getRoom(){return room;}
 
     @Override
     public String toString() {

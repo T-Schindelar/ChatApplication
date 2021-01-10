@@ -29,8 +29,10 @@ public class UserHandler implements Runnable {
         try {
             this.server.accountAndEntryManagement(user);
             this.server.broadcastMessages(new Message("Server", Mode.MESSAGE, user +
-                    " ist dem Chat beigetreten."));
+                    " ist dem Chat beigetreten.", "default"));
+            addMessageToTxtAreaServerlog(new Message("Server", Mode.MESSAGE, user + " ist dem Chat beigetreten.", ""));
             this.server.broadcastAllUsers();
+            this.server.broadcastRooms();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -42,13 +44,19 @@ public class UserHandler implements Runnable {
                 // checks message mode
                 switch (message.getMode()) {
                     case MESSAGE:
-                        server.broadcastMessages(message);
-                        addMessageToTxtAreaServerlog(message);
+                        if (!message.getRoom().equals("default")){
+                            server.broadcastToRoom(message);
+                            addMessageToTxtAreaServerlog(new Message(message.getClient(), message.getMode(), message.getRoom() + ": "+ message.getText(), ""));
+                        }
+                        else{
+                            server.broadcastMessages(message);
+                            addMessageToTxtAreaServerlog(message);
+                        }
                         break;
                     case LOGOUT:
                         server.removeUser(user);
                         server.broadcastMessages(new Message("Server", Mode.MESSAGE, user +
-                                " hat den Chat verlassen."));
+                                " hat den Chat verlassen.", "default"));
                         server.broadcastAllUsers();
                         break;
                     case CHANGE_NAME:
@@ -57,23 +65,29 @@ public class UserHandler implements Runnable {
                         user.setName(newName);
                         server.changeAccountName(oldName, newName);
                         server.broadcastMessages(new Message("Server", Mode.MESSAGE, oldName +
-                                " hat den Namen zu " + newName + " geändert."));
+                                " hat den Namen zu " + newName + " geändert.", "default"));
                         server.broadcastAllUsers();
                         break;
                     case CHANGE_PASSWORD:
                         server.changeAccountPassword(user.getName(), message.getText());
-                        server.sendMessage(user, new Message("server", Mode.MESSAGE,"Änderung erfolgreich."));
+                        server.sendMessage(user, new Message("server", Mode.MESSAGE,"Änderung erfolgreich.", "default"));
+                        break;
+                    case ROOM_CREATE:
+                        System.out.println("ROOM_CREATE");
+                        //server.addRoom(message.getClient(), message.getText());
+                    case ROOM_JOIN:
+                        server.addToRoom(message);
                         break;
                     default:
                         break;
                 }
             } catch (Exception e) {
                 System.out.println(user + " hat den Chat verlassen.");
-                addMessageToTxtAreaServerlog(new Message(user.getName(), Mode.LOGOUT, " hat den Chat verlassen."));
+                addMessageToTxtAreaServerlog(new Message(user.getName(), Mode.LOGOUT, " hat den Chat verlassen.", ""));
                 server.removeUser(user);
                 try {
                     server.broadcastMessages(new Message("Server", Mode.LOGOUT,user +
-                            " hat den Chat verlassen."));
+                            " hat den Chat verlassen.", "default"));
                     server.broadcastAllUsers();
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
@@ -84,11 +98,11 @@ public class UserHandler implements Runnable {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
                 System.out.println(user + " hat den Chat verlassen..");
-                addMessageToTxtAreaServerlog(new Message(user.getName(), Mode.LOGOUT, " hat den Chat verlassen."));
+                addMessageToTxtAreaServerlog(new Message(user.getName(), Mode.LOGOUT, " hat den Chat verlassen.", ""));
                 server.removeUser(user);
                 try {
                     server.broadcastMessages(new Message("Server", Mode.LOGOUT,user +
-                            " hat den Chat verlassen."));
+                            " hat den Chat verlassen.", "default"));
                     server.broadcastAllUsers();
                 } catch (IOException ioException) {
                     ioException.printStackTrace();

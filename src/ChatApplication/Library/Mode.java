@@ -8,6 +8,10 @@ public enum Mode {
     LOGIN,
     LOGOUT,
     MESSAGE,
-    REGISTRATION
+    REGISTRATION,
+    ROOM_CREATE,    //für Server
+    ROOM_JOIN,      //für Server
+    USER_TRANSMIT,  //für Client
+    ROOM_TRANSMIT   //für Client
 }
 

@@ -48,7 +48,7 @@ public class ChatController implements Initializable {
         dialog.setContentText("Bitte neuen Namen eingeben");
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
-            client.sendObject(new Message(client.getName(), Mode.CHANGE_NAME,result.get()));
+            client.sendObject(new Message(client.getName(), Mode.CHANGE_NAME,result.get(), "default"));
             client.setName(result.get());
         }
     }
@@ -60,12 +60,37 @@ public class ChatController implements Initializable {
         dialog.setContentText("Bitte neuen Passwort eingeben");
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
-            client.sendObject(new Message(client.getName(), Mode.CHANGE_PASSWORD, result.get()));
+            client.sendObject(new Message(client.getName(), Mode.CHANGE_PASSWORD, result.get(), "default"));
         }
     }
 
+    public void menuItemCreateRoom() {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Raum erstellen");
+        dialog.setHeaderText("");
+        dialog.setContentText("Bitte Raumnamen eingeben");
+        Optional<String> result = dialog.showAndWait();
+        if (result.isPresent()){
+            createRoom(result.get());
+        }
+    }
+
+    public void listRoomsClicked(){
+        String previousRoom = client.getActiveRoom();
+        Object item = listRooms.getSelectionModel().getSelectedItem();
+        if(listRooms.getSelectionModel().getSelectedItem() != null){
+            client.setActiveRoom(item.toString());
+            client.sendObject(new Message(client.getName(), Mode.ROOM_JOIN, previousRoom, item.toString()));
+        }
+        System.out.println(client.getActiveRoom());
+    }
+
     public void sendMessage() {
-        client.sendObject(new Message(client.getName(), Mode.MESSAGE, txtFieldMessage.getText()));
+        client.sendObject(new Message(client.getName(), Mode.MESSAGE, txtFieldMessage.getText(), client.getActiveRoom()));
         txtFieldMessage.clear();
+    }
+
+    public void createRoom(String name){
+        client.sendObject(new Message(client.getName(), Mode.ROOM_CREATE, name, ""));
     }
 }

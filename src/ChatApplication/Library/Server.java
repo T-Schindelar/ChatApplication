@@ -1,10 +1,14 @@
 package ChatApplication.Library;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.lang.reflect.Array;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.rmi.server.ExportException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Server {
@@ -13,6 +17,7 @@ public class Server {
     private final List<User> clients;
     private List<Account> accounts;
     private final AccountDbService service;
+    private HashMap<String, ArrayList<User>> rooms;
 
     public Server(int port) throws Exception {
         this.port = port;
@@ -20,6 +25,7 @@ public class Server {
         this.clients = new ArrayList<User>();
         this.service = new AccountDbService();
         this.accounts = service.getAllAccounts();
+        this.rooms = new HashMap<String, ArrayList<User>>();
         System.out.println("Port " + port + " ist geöffnet.");
     }
 
@@ -67,7 +73,7 @@ public class Server {
                     for (Account account : accounts) {
                         if (account.getName().equalsIgnoreCase(loginAccount.getName())) {
                             sendMessage(client, new Message("Server", Mode.ERROR, "Bitte wählen Sie " +
-                                    "einen anderen Namen."));
+                                    "einen anderen Namen.", ""));
                             registrationSuccessful = false;
                             break;
                         }
@@ -76,7 +82,7 @@ public class Server {
                         client.setName(loginAccount.getName());
                         addUser(client);
                         addAccount(loginAccount);
-                        sendMessage(client, new Message("Server", Mode.MESSAGE,"\n------ Willkommen ------"));
+                        sendMessage(client, new Message("Server", Mode.MESSAGE, "\n------ Willkommen ------", "default"));
                         return;
                     }
                 }
@@ -86,11 +92,11 @@ public class Server {
                         client.setName(loginAccount.getName());
                         addUser(client);
                         sendMessage(client, new Message("Server", Mode.MESSAGE,"\n----- Willkommen zurück " +
-                                "-----"));
+                                "-----", "default"));
                         return;
                     } else {
                         sendMessage(client, new Message("Server",Mode.ERROR, "Fehler! Bitte versuchen Sie " +
-                                "es erneut."));
+                                "es erneut.", ""));
                     }
                 }
             }
@@ -122,10 +128,23 @@ public class Server {
         }
     }
 
+    public void broadcastToRoom(Message message) throws IOException{
+        ArrayList<User> users = rooms.get(message.getRoom());
+        for (User client : users){
+            client.getOout().writeObject(new Message("Server", Mode.MESSAGE, clients.toString(), message.getRoom()));
+        }
+    }
+
     // send list of clients to all Users
     public void broadcastAllUsers() throws IOException {
         for (User client : clients) {
-            client.getOout().writeObject(new Message("Server", Mode.MESSAGE, clients.toString()));
+            client.getOout().writeObject(new Message("Server", Mode.USER_TRANSMIT, clients.toString(), ""));
+        }
+    }
+
+    public void broadcastRooms() throws IOException {
+        for (User client : clients) {
+            client.getOout().writeObject(new Message("Server", Mode.ROOM_TRANSMIT, rooms.keySet().toString(), "default"));
         }
     }
 
@@ -133,6 +152,44 @@ public class Server {
     public void addAccount(Account account) {
         accounts.add(account);
         service.set(account);
+    }
+
+    private User getUserByName(String name) throws IOException {
+        User u;
+        for(User user : clients){
+            if(user.getName().equals(name)){
+                u = user;
+                return u;
+            }
+        }
+        return new User(new Socket(), "", new ObjectInputStream(new FileInputStream(""))); //wird nicht ausgeführt, ist nur da damit der Compiler nicht nervt
+    }
+
+    public void addRoom(String client, String name) throws IOException {
+        try{
+            if(!rooms.containsKey(name)) {
+                ArrayList a = new ArrayList<User>();
+                a.add(getUserByName(client));
+                rooms.put(name, a);
+                broadcastRooms();
+            }
+            else{
+                System.out.println("Raum vorhanden");   //todo: richtige Rückmeldung an Nutzer
+            }
+            System.out.println(rooms);
+        }
+        catch (Exception e){
+            System.out.println("CREATE_ROOM EXCEPTION");
+            e.printStackTrace();
+        }
+
+    }
+
+    public void addToRoom(Message message) throws IOException {
+        ArrayList a = rooms.get(message.getRoom());
+        a.add(getUserByName(message.getClient()));
+        rooms.put(message.getRoom(), a);
+        rooms.remove(message.getText(), message.getClient());
     }
 
     public void changeAccountName(String oldName, String newName) {

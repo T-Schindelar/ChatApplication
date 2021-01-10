@@ -1,9 +1,11 @@
 package ChatApplication.Library;
 
+import javafx.application.Platform;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 
 import java.io.ObjectInputStream;
+import java.util.Arrays;
 
 class ReceivedMessagesHandler implements Runnable {
     private final ObjectInputStream oin;
@@ -14,31 +16,42 @@ class ReceivedMessagesHandler implements Runnable {
     private final TextArea txtAreaState;
     private final ListView listRooms;
     private final ListView listUser;
+    private Client client;
 
     public ReceivedMessagesHandler(ObjectInputStream oin, String name, TextArea txtAreaChat,
-                                   TextArea txtAreaState, ListView listRooms, ListView listUser) {
+                                   TextArea txtAreaState, ListView listRooms, ListView listUser, Client client) {
         this.oin = oin;
         this.name = name;
         this.txtAreaChat = txtAreaChat;
         this.txtAreaState = txtAreaState;
         this.listRooms = listRooms;
         this.listUser = listUser;
+        this.client = client;
     }
 
     public void run() {
         while (true) {
             try {
                 Message message = (Message) oin.readObject();
-                System.out.println(message);            // todo
+                //System.out.println(message);            // todo
                 // server messages
                 if (message.getClient().equals("Server")) {
                     // show all other Users
-                    if (message.getText().charAt(0) == '[') {
+                    if (message.getMode() == Mode.USER_TRANSMIT) {
                         populateUserList(message.getText().substring(1, message.getText().length() - 1).split(","));
+                    }
+                    else if (message.getMode() == Mode.ROOM_TRANSMIT) {
+                        System.out.println(message.getText());
+                        populateRoomsList(message.getText().substring(1, message.getText().length() - 1).split(","));
                     }
                     // server info messages
                     else {
-                        addMessageToTxtAreaChat(message);
+                        if(message.getRoom().equals(client.getActiveRoom()) && !message.getText().contains(client.getName())){
+                            addMessageToTxtAreaChat(message);
+                        }
+                        else{
+                            System.out.println("message " + message.getText() + " dismissed; " + message.getRoom() + " " + client.getActiveRoom());
+                        }
                     }
                 }
                 // other client messages
@@ -72,10 +85,10 @@ class ReceivedMessagesHandler implements Runnable {
     }
 
     public void populateRoomsList(String[] list) {
+        listRooms.getItems().clear();
+        listRooms.getItems().add("default");
         for (String item : list) {
-            if (!listRooms.getItems().contains(item)) {
-                listRooms.getItems().add(item.strip());
-            }
+            listRooms.getItems().add(item.strip());
         }
     }
 

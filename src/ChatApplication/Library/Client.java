@@ -16,6 +16,7 @@ public class Client {
     private Socket socket;
     private ObjectOutputStream oout;
     private ObjectInputStream oin;
+    private String activeRoom;
 
     // client with specific host
     public Client(String host, int port) throws Exception {
@@ -23,6 +24,7 @@ public class Client {
         this.port = port;
         // connect client to server
         this.socket = new Socket(host, port);
+        this.activeRoom = "default";
         System.out.println("Client successfully connected to server!");
         // create object input/output streams
         this.oout = new ObjectOutputStream(socket.getOutputStream());
@@ -35,6 +37,7 @@ public class Client {
         this.port = port;
         // connect client to server
         this.socket = new Socket(host, port);
+        this.activeRoom = "default";
         // create object input/output streams
         this.oout = new ObjectOutputStream(socket.getOutputStream());
         this.oin = new ObjectInputStream(socket.getInputStream());
@@ -44,48 +47,10 @@ public class Client {
     // todo: dekonstruktor schreiben
 
 
-    // todo löschen
-    public void run() throws IOException, ConnectException {
-//        // connect client to server
-//        Socket socket = new Socket(host, port);
-//        System.out.println("Client successfully connected to server!");
-//
-//        // create object input/output streams
-//        ObjectOutputStream oout = new ObjectOutputStream(socket.getOutputStream());
-//        ObjectInputStream oin = new ObjectInputStream(socket.getInputStream());
-
-//        Scanner scanner = new Scanner(System.in);
-//        // logging in client
-//        try {
-//            login(scanner, oin, oout);
-//        } catch (Exception ignore) {
-//        }
-//
-//        // create a new thread for received messages handling and start it
-//        Thread thread = new Thread(new ReceivedMessagesHandler(oin, this.name));
-//        thread.start();
-//
-//        // send chat messages to server
-//        String message;
-//        while (!(message = scanner.nextLine()).toLowerCase().equals("close")) {
-//            oout.writeObject(new Message(name, message));
-//            oout.flush();
-//        }
-//
-//        // send closing message to server and closes all connections
-//        oout.writeObject(new Message(name, message));
-//        oout.flush();
-//        oin.close();
-//        oout.close();
-//        thread.interrupt();
-//        scanner.close();
-//        socket.close();
-    }
-
     // handles login process
     public Message login(Mode mode, String name, String password) throws IOException, ClassNotFoundException {
         if (name.isEmpty() || password.isEmpty())
-            return new Message("", Mode.ERROR, "Bitte Namen und Passwort eingeben!");
+            return new Message("", Mode.ERROR, "Bitte Namen und Passwort eingeben!", "");
         oout.writeObject(mode);
         oout.flush();
         oout.writeObject(new Account(name.strip(), password));
@@ -98,7 +63,7 @@ public class Client {
     // returns an new thread for the ReceivedMessagesHandler
     public Thread createThreadReceivedMessagesHandler(TextArea txtAreaChat, TextArea txtAreaState,
                                                       ListView listRooms, ListView listUser) {
-        return new Thread(new ReceivedMessagesHandler(oin, name, txtAreaChat, txtAreaState, listRooms, listUser));
+        return new Thread(new ReceivedMessagesHandler(oin, name, txtAreaChat, txtAreaState, listRooms, listUser, this));
     }
 
     // sends object via output stream
@@ -116,11 +81,11 @@ public class Client {
     }
     public int getPort() { return port; }
     public String getHost() { return host; }
+    public String getActiveRoom() { return activeRoom; }
 
     // setter
-    public void setName(String name) {
-        this.name = name;
-    }
+    public void setName(String name) { this.name = name; }
+    public void setActiveRoom(String name) { this.activeRoom = name; }
 
     // todo: evtl. wieder löschen
     @Override
