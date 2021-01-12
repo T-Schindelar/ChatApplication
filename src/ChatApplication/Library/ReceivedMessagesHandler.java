@@ -1,13 +1,9 @@
 package ChatApplication.Library;
 
-import javafx.application.Platform;
-import javafx.beans.Observable;
-import javafx.collections.ObservableList;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 
 import java.io.ObjectInputStream;
-import java.util.Arrays;
 
 class ReceivedMessagesHandler implements Runnable {
     private final ObjectInputStream oin;
@@ -79,24 +75,8 @@ class ReceivedMessagesHandler implements Runnable {
         }
     }
 
-    public void populateUserList(String[] list) {
-        listUser.getItems().clear();
-        for (String item : list) {
-            listUser.getItems().add(item.strip());
-//            if (!listUser.getItems().contains(item)) {
-//            }
-        }
-    }
-
-    public void populateRoomsList(String[] list) {
-        listRooms.getItems().clear();
-        for (String item : list) {
-            listRooms.getItems().add(item.strip());
-        }
-    }
-
     public void populateList(String[] list, ListView object) {
-        listRooms.getItems().clear();
+        object.getItems().clear();
         for (String item : list) {
             object.getItems().add(item.strip());
         }
