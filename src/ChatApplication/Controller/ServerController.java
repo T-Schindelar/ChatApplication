@@ -1,25 +1,20 @@
 package ChatApplication.Controller;
 
-import ChatApplication.Library.Server;
-import ChatApplication.Library.User;
-import ChatApplication.Library.UserHandler;
+import ChatApplication.Library.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class ServerController implements Initializable, Runnable{
     public TextArea txtAreaServerlog;
     public TextArea txtAreaInfo;
     public TextField txtFieldStateServer;
-    public TextField txtFieldTask;
-    public TextField txtFieldStateTask;
     public ListView listUser;
     public ListView listRooms;
-    public ChoiceBox chBoxTasks;
-    public Button btnTask;
 
     private Server server;
 
@@ -46,7 +41,69 @@ public class ServerController implements Initializable, Runnable{
         }
     }
 
-    public void btnTask(ActionEvent actionEvent) {
+    public void menuItemWarnUser(ActionEvent actionEvent) {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Nutzer verwarnen");
+        dialog.setHeaderText("");
+        dialog.setContentText("Bitte neuen Namen eingeben");
+        Optional<String> result = dialog.showAndWait();
+        if (result.isPresent()) {
+            // do something
+        }
+    }
 
+    public void menuItemTimeOutUser(ActionEvent actionEvent) {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Nutzer temporär sperren");
+        dialog.setHeaderText("");
+        dialog.setContentText("Bitte neuen Namen eingeben");
+        Optional<String> result = dialog.showAndWait();
+        if (result.isPresent()) {
+            // do something
+        }
+    }
+
+    public void menuItemBanUser(ActionEvent actionEvent) {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Nutzer permanent sperren");
+        dialog.setHeaderText("");
+        dialog.setContentText("Bitte neuen Namen eingeben");
+        Optional<String> result = dialog.showAndWait();
+        if (result.isPresent()) {
+            // do something
+        }
+    }
+
+    public void menuItemCreateRoom(ActionEvent actionEvent) {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Raum erstellen");
+        dialog.setHeaderText("");
+        dialog.setContentText("Bitte neuen Namen eingeben");
+        Optional<String> result = dialog.showAndWait();
+        if (result.isPresent()) {
+            // do something
+        }
+    }
+
+    public void menuItemEditRoom(ActionEvent actionEvent) {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Raum ändern");
+        dialog.setHeaderText("");
+        dialog.setContentText("Bitte neuen Namen eingeben");
+        Optional<String> result = dialog.showAndWait();
+        if (result.isPresent()) {
+            // do something
+        }
+    }
+
+    public void menuItemDeleteRoom(ActionEvent actionEvent) {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Raum löschen");
+        dialog.setHeaderText("");
+        dialog.setContentText("Bitte neuen Namen eingeben");
+        Optional<String> result = dialog.showAndWait();
+        if (result.isPresent()) {
+            // do something
+        }
     }
 }

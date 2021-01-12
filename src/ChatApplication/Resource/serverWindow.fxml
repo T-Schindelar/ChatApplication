@@ -10,36 +10,40 @@
         <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="473.0" minWidth="269.0" prefWidth="269.0" />
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints valignment="TOP" vgrow="SOMETIMES" />
-        <RowConstraints valignment="TOP" vgrow="SOMETIMES" />
-      <RowConstraints maxHeight="322.0" minHeight="41.0" prefHeight="256.0" valignment="TOP" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="369.0" minHeight="67.0" prefHeight="93.0" valignment="TOP" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="164.0" minHeight="53.0" prefHeight="99.0" valignment="TOP" vgrow="SOMETIMES" />
-      <RowConstraints valignment="TOP" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="57.0" minHeight="7.0" prefHeight="26.0" valignment="TOP" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="136.0" minHeight="48.0" prefHeight="58.0" valignment="TOP" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="383.0" minHeight="41.0" prefHeight="307.0" valignment="TOP" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="369.0" minHeight="67.0" prefHeight="166.0" valignment="TOP" vgrow="SOMETIMES" />
+      <RowConstraints />
+      <RowConstraints />
     </rowConstraints>
     <children>
         <MenuBar GridPane.columnSpan="2">
             <menus>
-                <Menu mnemonicParsing="false" text="File">
+                <Menu mnemonicParsing="false" text="Nutzerverwaltung">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="Close" />
+                        <MenuItem fx:id="menuItemWarnUser" mnemonicParsing="false" onAction="#menuItemWarnUser" text="Nutzer verwarnen" />
+                  <MenuItem fx:id="menuItemTimeOutUser" mnemonicParsing="false" onAction="#menuItemTimeOutUser" text="Nutzer temporär ausschließen" />
+                  <MenuItem fx:id="menuItemBanUser" mnemonicParsing="false" onAction="#menuItemBanUser" text="Nutzer permanent sperren" />
                     </items>
                 </Menu>
-                <Menu mnemonicParsing="false" text="Edit">
+                <Menu mnemonicParsing="false" text="Raumverwaltung">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="Delete" />
-                    </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Help">
-                    <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
+                        <MenuItem fx:id="menuItemCreateRoom" mnemonicParsing="false" onAction="#menuItemCreateRoom" text="Nutzer temporär sperren" />
+                  <MenuItem fx:id="menuItemEditRoom" mnemonicParsing="false" onAction="#menuItemEditRoom" text="Raum ändern" />
+                  <MenuItem fx:id="menuItemDeleteRoom" mnemonicParsing="false" onAction="#menuItemDeleteRoom" text="Raum löschen" />
                     </items>
                 </Menu>
             </menus>
         </MenuBar>
-      <TextField fx:id="txtFieldStateServer" editable="false" focusTraversable="false" style="-fx-background-color: none;" GridPane.rowIndex="1">
+      <Label contentDisplay="TOP" layoutX="351.0" layoutY="472.0" text="Serverstatus" GridPane.rowIndex="1">
          <GridPane.margin>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </GridPane.margin>
+      </Label>
+      <TextField fx:id="txtFieldStateServer" editable="false" focusTraversable="false" style="-fx-background-color: none;" GridPane.columnSpan="2" GridPane.rowIndex="1">
+         <GridPane.margin>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="30.0" />
          </GridPane.margin>
       </TextField>
       <Label contentDisplay="TOP" layoutX="351.0" layoutY="352.0" text="Serverlog" GridPane.rowIndex="2">
@@ -52,7 +56,7 @@
                 <Insets bottom="10.0" left="10.0" right="10.0" top="30.0" />
             </GridPane.margin>
         </TextArea>
-        <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.rowSpan="2">
+        <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" GridPane.columnIndex="1" GridPane.rowIndex="2">
             <tabs>
                 <Tab text="Benutzer">
                     <content>
@@ -89,30 +93,5 @@
             <Insets bottom="10.0" left="10.0" right="10.0" top="30.0" />
          </GridPane.margin>
       </TextArea>
-      <Label contentDisplay="TOP" text="Aufgaben" GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.valignment="TOP">
-         <GridPane.margin>
-            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-         </GridPane.margin>
-      </Label>
-      <TextField fx:id="txtFieldTask" GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.valignment="TOP">
-         <GridPane.margin>
-            <Insets bottom="10.0" left="10.0" right="10.0" top="30.0" />
-         </GridPane.margin>
-      </TextField>
-      <ChoiceBox fx:id="chBoxTasks" prefHeight="26.0" prefWidth="202.0" GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.valignment="BOTTOM">
-         <GridPane.margin>
-            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-         </GridPane.margin>
-      </ChoiceBox>
-      <Button fx:id="btnTask" mnemonicParsing="false" onAction="#btnTask" text="OK" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="4" GridPane.valignment="BOTTOM">
-         <GridPane.margin>
-            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-         </GridPane.margin>
-      </Button>
-      <TextField fx:id="txtFieldStateTask" editable="false" focusTraversable="false" GridPane.columnIndex="1" GridPane.rowIndex="5">
-         <GridPane.margin>
-            <Insets bottom="10.0" left="10.0" right="10.0" />
-         </GridPane.margin>
-      </TextField>
     </children>
 </GridPane>
