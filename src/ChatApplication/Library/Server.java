@@ -162,7 +162,7 @@ public class Server {
                 return u;
             }
         }
-        return new User(new Socket(), "", new ObjectInputStream(new FileInputStream(""))); //wird nicht ausgeführt, ist nur da damit der Compiler nicht nervt
+        return null;    //new User(new Socket(), "", new ObjectInputStream(new FileInputStream(""))); //wird nicht ausgeführt, ist nur da damit der Compiler nicht nervt
     }
 
     public void addRoom(String client, String name) throws IOException {
@@ -187,6 +187,7 @@ public class Server {
 
     public void addToRoom(Message message) throws IOException {
         ArrayList a = rooms.get(message.getRoom());
+        System.out.println(a);
         a.add(getUserByName(message.getClient()));
         rooms.put(message.getRoom(), a);
         rooms.remove(message.getText(), message.getClient());

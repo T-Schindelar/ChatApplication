@@ -74,7 +74,7 @@ public class UserHandler implements Runnable {
                         break;
                     case ROOM_CREATE:
                         System.out.println("ROOM_CREATE");
-                        //server.addRoom(message.getClient(), message.getText());
+                        server.addRoom(message.getClient(), message.getText());
                     case ROOM_JOIN:
                         server.addToRoom(message);
                         break;
@@ -92,6 +92,7 @@ public class UserHandler implements Runnable {
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
                 }
+                e.printStackTrace();
                 return;
             }
             try {
