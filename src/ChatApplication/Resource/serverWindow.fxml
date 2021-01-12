@@ -29,7 +29,7 @@
                 </Menu>
                 <Menu mnemonicParsing="false" text="Raumverwaltung">
                     <items>
-                        <MenuItem fx:id="menuItemCreateRoom" mnemonicParsing="false" onAction="#menuItemCreateRoom" text="Nutzer temporär sperren" />
+                        <MenuItem fx:id="menuItemCreateRoom" mnemonicParsing="false" onAction="#menuItemCreateRoom" text="Raum erstellen" />
                   <MenuItem fx:id="menuItemEditRoom" mnemonicParsing="false" onAction="#menuItemEditRoom" text="Raum ändern" />
                   <MenuItem fx:id="menuItemDeleteRoom" mnemonicParsing="false" onAction="#menuItemDeleteRoom" text="Raum löschen" />
                     </items>

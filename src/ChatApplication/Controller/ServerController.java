@@ -5,6 +5,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -74,14 +75,14 @@ public class ServerController implements Initializable, Runnable{
         }
     }
 
-    public void menuItemCreateRoom(ActionEvent actionEvent) {
+    public void menuItemCreateRoom(ActionEvent actionEvent) throws IOException {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Raum erstellen");
         dialog.setHeaderText("");
-        dialog.setContentText("Bitte neuen Namen eingeben");
+        dialog.setContentText("Bitte Raumnamen eingeben");
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
-            // do something
+            server.addRoom(result.get());
         }
     }
 

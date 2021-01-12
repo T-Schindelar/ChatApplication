@@ -1,6 +1,8 @@
 package ChatApplication.Library;
 
 import javafx.application.Platform;
+import javafx.beans.Observable;
+import javafx.collections.ObservableList;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 
@@ -33,24 +35,26 @@ class ReceivedMessagesHandler implements Runnable {
         while (true) {
             try {
                 Message message = (Message) oin.readObject();
-                //System.out.println(message);            // todo
+                System.out.println(message);            // todo
                 // server messages
                 if (message.getClient().equals("Server")) {
                     // show all other Users
                     if (message.getMode() == Mode.USER_TRANSMIT) {
-                        populateUserList(message.getText().substring(1, message.getText().length() - 1).split(","));
+                        //populateUserList(message.getText().substring(1, message.getText().length() - 1).split(","));
+                        populateList(message.getText().substring(1, message.getText().length() - 1).split(","), listUser);
                     }
                     else if (message.getMode() == Mode.ROOM_TRANSMIT) {
-                        System.out.println(message.getText());
-                        populateRoomsList(message.getText().substring(1, message.getText().length() - 1).split(","));
+                        System.out.println(message.getText());//todo
+                        //populateRoomsList(message.getText().substring(1, message.getText().length() - 1).split(","));
+                        populateList(message.getText().substring(1, message.getText().length() - 1).split(","), listRooms);
                     }
                     // server info messages
-                    else {
+                    else {      //todo entfernen?
                         if(message.getRoom().equals(client.getActiveRoom()) && !message.getText().contains(client.getName())){
                             addMessageToTxtAreaChat(message);
                         }
                         else{
-                            System.out.println("message " + message.getText() + " dismissed; " + message.getRoom() + " " + client.getActiveRoom());
+                            System.out.println("message " + message.getText() + " dismissed; " + message.getRoom() + " " + client.getActiveRoom());//todo
                         }
                     }
                 }
@@ -86,9 +90,15 @@ class ReceivedMessagesHandler implements Runnable {
 
     public void populateRoomsList(String[] list) {
         listRooms.getItems().clear();
-        listRooms.getItems().add("default");
         for (String item : list) {
             listRooms.getItems().add(item.strip());
+        }
+    }
+
+    public void populateList(String[] list, ListView object) {
+        listRooms.getItems().clear();
+        for (String item : list) {
+            object.getItems().add(item.strip());
         }
     }
 

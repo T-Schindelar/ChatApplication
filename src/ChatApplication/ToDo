@@ -4,9 +4,10 @@ todo
 disconnect routine - nutzerverwaltung bei disconnect, liste aktualisieren bei jedem userbroadcast, streams schließen...
 nickname ändern
 statusmeldungen
-Räume
+Räume - beim Raumwechsel Chat leeren (wenn Zeit dann Chattabs) , nur benutzer im raum anzeigen
 Menüleistenoptionen
-
+temp. Ausschließen - Client kappen + Zeitstempel für Cooldown
+permanent : blacklist
 
 ------------------------
 erledigt

@@ -26,6 +26,7 @@ public class Server {
         this.service = new AccountDbService();
         this.accounts = service.getAllAccounts();
         this.rooms = new HashMap<String, ArrayList<User>>();
+        this.rooms.put("default", new ArrayList<User>());
         System.out.println("Port " + port + " ist geöffnet.");
     }
 
@@ -131,7 +132,7 @@ public class Server {
     public void broadcastToRoom(Message message) throws IOException{
         ArrayList<User> users = rooms.get(message.getRoom());
         for (User client : users){
-            client.getOout().writeObject(new Message("Server", Mode.MESSAGE, clients.toString(), message.getRoom()));
+            client.getOout().writeObject(message);
         }
     }
 
@@ -165,11 +166,30 @@ public class Server {
         return null;    //new User(new Socket(), "", new ObjectInputStream(new FileInputStream(""))); //wird nicht ausgeführt, ist nur da damit der Compiler nicht nervt
     }
 
-    public void addRoom(String client, String name) throws IOException {
+//    public void addRoom(String client, String name) throws IOException {
+//        try{
+//            if(!rooms.containsKey(name)) {
+//                ArrayList a = new ArrayList<User>();
+//                a.add(getUserByName(client));
+//                rooms.put(name, a);
+//                broadcastRooms();
+//            }
+//            else{
+//                System.out.println("Raum vorhanden");   //todo: richtige Rückmeldung an Nutzer
+//            }
+//            System.out.println(rooms);
+//        }
+//        catch (Exception e){
+//            System.out.println("CREATE_ROOM EXCEPTION");
+//            e.printStackTrace();
+//        }
+//
+//    }
+
+    public void addRoom(String name) throws IOException {
         try{
             if(!rooms.containsKey(name)) {
                 ArrayList a = new ArrayList<User>();
-                a.add(getUserByName(client));
                 rooms.put(name, a);
                 broadcastRooms();
             }
@@ -186,11 +206,13 @@ public class Server {
     }
 
     public void addToRoom(Message message) throws IOException {
-        ArrayList a = rooms.get(message.getRoom());
-        System.out.println(a);
-        a.add(getUserByName(message.getClient()));
-        rooms.put(message.getRoom(), a);
-        rooms.remove(message.getText(), message.getClient());
+        ArrayList<User> a = rooms.get(message.getRoom());
+        //System.out.println(a);
+        User u = getUserByName(message.getClient());
+        a.add(u);
+        rooms.get(message.getText()).remove(u);
+        System.out.println(rooms + " after");//todo
+        System.out.println(message.getText() + " " + message.getRoom());
     }
 
     public void changeAccountName(String oldName, String newName) {
@@ -213,6 +235,8 @@ public class Server {
     // add a user to the list
     public void addUser(User user) {
         clients.add(user);
+        ArrayList<User> u = rooms.get("default");
+        u.add(user);
     }
 
     // delete a user from the list

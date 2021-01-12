@@ -44,14 +44,14 @@ public class UserHandler implements Runnable {
                 // checks message mode
                 switch (message.getMode()) {
                     case MESSAGE:
-                        if (!message.getRoom().equals("default")){
-                            server.broadcastToRoom(message);
-                            addMessageToTxtAreaServerlog(new Message(message.getClient(), message.getMode(), message.getRoom() + ": "+ message.getText(), ""));
-                        }
-                        else{
+                        //if (!message.getRoom().equals("default")){
+                        server.broadcastToRoom(message);
+                        addMessageToTxtAreaServerlog(new Message(message.getClient(), message.getMode(), "{" + message.getRoom() + "} " + message.getText(), ""));
+                        //}
+                        /*else{
                             server.broadcastMessages(message);
                             addMessageToTxtAreaServerlog(message);
-                        }
+                        }*/
                         break;
                     case LOGOUT:
                         server.removeUser(user);
@@ -74,7 +74,7 @@ public class UserHandler implements Runnable {
                         break;
                     case ROOM_CREATE:
                         System.out.println("ROOM_CREATE");
-                        server.addRoom(message.getClient(), message.getText());
+                        //server.addRoom(message.getClient(), message.getText());
                     case ROOM_JOIN:
                         server.addToRoom(message);
                         break;
