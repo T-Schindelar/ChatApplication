@@ -21,6 +21,16 @@ public class User {
 //        this.color = ColorInt.getColor();      // ToDo:
     }
 
+    // disconnects client
+    // disconnects client
+    public void disconnect() {
+        try {
+            client.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     // getter
     public ObjectInputStream getOin() {
         return oin;

@@ -11,7 +11,7 @@ public class AccountDbService {
     public AccountDbService() {
         try {
             Class.forName("org.sqlite.JDBC");
-            this.connection = DriverManager.getConnection("jdbc:sqlite:src/ChatApplication/Resource/ChatApplicationDB");
+            this.connection = DriverManager.getConnection("jdbc:sqlite:src/ChatApplication/Resource/ChatApplicationDB.db");
             this.statement = connection.createStatement();
         } catch (Exception e) {
             e.printStackTrace();
@@ -33,7 +33,8 @@ public class AccountDbService {
             String sql = String.format("SELECT * FROM Accounts WHERE Name = '%s'", name);
             ResultSet result = statement.executeQuery(sql);
             if (result.next())
-                return new Account(result.getString("Name"), result.getString("Password"));
+                return new Account(result.getString("Name"), result.getString("Password"),
+                        result.getBoolean("Banned"));
             else
                 return null;
         } catch (SQLException throwables) {
@@ -48,7 +49,8 @@ public class AccountDbService {
             String sql = "SELECT * FROM Accounts";
             ResultSet result = statement.executeQuery(sql);
             while (result.next())
-                resultList.add(new Account(result.getString("Name"), result.getString("Password")));
+                resultList.add(new Account(result.getString("Name"), result.getString("Password"),
+                        result.getBoolean("Banned")));
             return resultList;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -83,7 +85,16 @@ public class AccountDbService {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+    }
 
+    public void updateBanned(String name, boolean banned) {
+        try {
+            String sql = String.format("Update Accounts Set Banned = '%b' WHERE Name = '%s'",
+                    banned, name);
+            statement.executeUpdate(sql);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
     }
 
     public void close() {

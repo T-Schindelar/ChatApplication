@@ -18,6 +18,14 @@ public class Message implements java.io.Serializable {
         this.room = room;
     }
 
+    public Message(String client, Mode mode, String text) {
+        this.timestamp = new SimpleDateFormat("HH:mm").format(new Date());
+        this.client = client;
+        this.mode = mode;
+        this.text = text;
+        this.room = "Lobby";
+    }
+
     // getter
     public String getClient() {
         return client;

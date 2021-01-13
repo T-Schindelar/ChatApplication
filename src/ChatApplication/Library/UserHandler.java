@@ -4,8 +4,6 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
-import java.io.IOException;
-
 public class UserHandler implements Runnable {
     private final Server server;
     private User user;
@@ -28,11 +26,12 @@ public class UserHandler implements Runnable {
     public void run() {
         try {
             this.server.accountAndEntryManagement(user);
-            this.server.broadcastMessages(new Message("Server", Mode.MESSAGE, user +
-                    " ist dem Chat beigetreten.", "default"));
-            addMessageToTxtAreaServerlog(new Message("Server", Mode.MESSAGE, user + " ist dem Chat beigetreten.", ""));
-            this.server.broadcastAllUsers();
-            this.server.broadcastRooms();
+//            this.server.broadcastMessages(new Message("Server", Mode.MESSAGE, user +
+//                    " ist dem Chat beigetreten."));
+//            addMessageToTxtAreaServerlog(new Message("Server", Mode.MESSAGE,
+//                    user + " ist dem Chat beigetreten."));
+//            this.server.broadcastAllUsers();
+//            this.server.broadcastRooms();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -44,19 +43,27 @@ public class UserHandler implements Runnable {
                 // checks message mode
                 switch (message.getMode()) {
                     case MESSAGE:
-                        //if (!message.getRoom().equals("default")){
                         server.broadcastToRoom(message);
-                        addMessageToTxtAreaServerlog(new Message(message.getClient(), message.getMode(), "{" + message.getRoom() + "} " + message.getText(), ""));
-                        //}
-                        /*else{
-                            server.broadcastMessages(message);
-                            addMessageToTxtAreaServerlog(message);
-                        }*/
+                        addMessageToTxtAreaServerlog(new Message(message.getClient(), message.getMode(),
+                                "{" + message.getRoom() + "} " + message.getText(), ""));
+                        break;
+                    case INFORMATION_REQUEST:
+                        System.out.println(message);
+                        populateList(server.getClientNames(), listUser);
+                        populateList(server.getRoomNames(), listRooms);
+
+                        server.broadcastMessages(new Message("Server", Mode.MESSAGE, user +
+                                " ist dem Chat beigetreten."));
+                        addMessageToTxtAreaServerlog(new Message("Server", Mode.MESSAGE,
+                                user + " ist dem Chat beigetreten."));
+                        server.broadcastAllUsers();
+                        server.broadcastRooms();
                         break;
                     case LOGOUT:
                         server.removeUser(user);
+                        populateList(server.getClientNames(), listUser);
                         server.broadcastMessages(new Message("Server", Mode.MESSAGE, user +
-                                " hat den Chat verlassen.", "default"));
+                                " hat den Chat verlassen."));
                         server.broadcastAllUsers();
                         break;
                     case CHANGE_NAME:
@@ -64,13 +71,15 @@ public class UserHandler implements Runnable {
                         String newName = message.getText();
                         user.setName(newName);
                         server.changeAccountName(oldName, newName);
-                        server.broadcastMessages(new Message("Server", Mode.MESSAGE, oldName +
-                                " hat den Namen zu " + newName + " geändert.", "default"));
+                        populateList(server.getClientNames(), listUser);
+                        server.broadcastToRoom(new Message("Server", Mode.MESSAGE, oldName +
+                                " hat den Namen zu " + newName + " geändert.", message.getRoom()));
                         server.broadcastAllUsers();
                         break;
                     case CHANGE_PASSWORD:
                         server.changeAccountPassword(user.getName(), message.getText());
-                        server.sendMessage(user, new Message("server", Mode.MESSAGE,"Änderung erfolgreich.", "default"));
+                        server.sendMessage(user, new Message("server", Mode.MESSAGE,"Änderung erfolgreich.",
+                                message.getRoom()));
                         break;
                     case ROOM_CREATE:
                         System.out.println("ROOM_CREATE");
@@ -82,16 +91,13 @@ public class UserHandler implements Runnable {
                         break;
                 }
             } catch (Exception e) {
-                System.out.println(user + " hat den Chat verlassen.");
+                System.out.println(user + " hat den Chat verlassen.");      // todo löschen
                 addMessageToTxtAreaServerlog(new Message(user.getName(), Mode.LOGOUT, " hat den Chat verlassen.", ""));
                 server.removeUser(user);
-                try {
-                    server.broadcastMessages(new Message("Server", Mode.LOGOUT,user +
-                            " hat den Chat verlassen.", "default"));
-                    server.broadcastAllUsers();
-                } catch (IOException ioException) {
-                    ioException.printStackTrace();
-                }
+                populateList(server.getClientNames(), listUser);
+                server.broadcastMessages(new Message("Server", Mode.LOGOUT,user +
+                        " hat den Chat verlassen."));
+                server.broadcastAllUsers();
                 e.printStackTrace();
                 return;
             }
@@ -101,13 +107,10 @@ public class UserHandler implements Runnable {
                 System.out.println(user + " hat den Chat verlassen..");
                 addMessageToTxtAreaServerlog(new Message(user.getName(), Mode.LOGOUT, " hat den Chat verlassen.", ""));
                 server.removeUser(user);
-                try {
-                    server.broadcastMessages(new Message("Server", Mode.LOGOUT,user +
-                            " hat den Chat verlassen.", "default"));
-                    server.broadcastAllUsers();
-                } catch (IOException ioException) {
-                    ioException.printStackTrace();
-                }
+                populateList(server.getClientNames(), listUser);
+                server.broadcastMessages(new Message("Server", Mode.LOGOUT,user +
+                        " hat den Chat verlassen."));
+                server.broadcastAllUsers();
                 return;
             }
         }
@@ -116,6 +119,13 @@ public class UserHandler implements Runnable {
     // add message to server log
     public void addMessageToTxtAreaServerlog(Message message) {
         txtAreaServerlog.setText(txtAreaServerlog.getText() + message + "\n");
+    }
+
+    public void populateList(String[] list, ListView object) {
+        object.getItems().clear();
+        for (String item : list) {
+            object.getItems().add(item.strip());
+        }
     }
 
 }

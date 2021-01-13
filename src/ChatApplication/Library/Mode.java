@@ -2,9 +2,11 @@ package ChatApplication.Library;
 
 // mode for a message
 public enum Mode {
-    ERROR,
     CHANGE_NAME,
     CHANGE_PASSWORD,
+    DISCONNECT,
+    ERROR,
+    INFORMATION_REQUEST,
     LOGIN,
     LOGOUT,
     MESSAGE,

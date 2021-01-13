@@ -23,7 +23,8 @@ public class ServerController implements Initializable, Runnable{
         try {
             this.server = new Server(5000);
             txtFieldStateServer.setText("Port " + server.getPort() + " ist offen.");
-            new Thread(this).start(); //Thread wird erzeugt
+            listRooms.getItems().add("Lobby");
+            new Thread(this).start();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -46,21 +47,25 @@ public class ServerController implements Initializable, Runnable{
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Nutzer verwarnen");
         dialog.setHeaderText("");
-        dialog.setContentText("Bitte neuen Namen eingeben");
+        dialog.setContentText("Bitte Nutzer eingeben");
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
-            // do something
+            server.warnUser(result.get());
+            txtAreaServerlog.setText(txtAreaServerlog.getText() + new Message("Server", Mode.MESSAGE,
+                    "Nutzer: " + result.get() + " wurde verwarnt.") + "\n");
         }
     }
 
     public void menuItemTimeOutUser(ActionEvent actionEvent) {
         TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Nutzer temporär sperren");
+        dialog.setTitle("Nutzer temporär ausschließen");
         dialog.setHeaderText("");
-        dialog.setContentText("Bitte neuen Namen eingeben");
+        dialog.setContentText("Bitte Nutzer eingeben");
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
-            // do something
+            server.disconnectUser(result.get());
+            txtAreaServerlog.setText(txtAreaServerlog.getText() + new Message("Server", Mode.MESSAGE,
+                    "Nutzer: " + result.get() + " wurde entfernt.") + "\n");
         }
     }
 
@@ -68,10 +73,12 @@ public class ServerController implements Initializable, Runnable{
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Nutzer permanent sperren");
         dialog.setHeaderText("");
-        dialog.setContentText("Bitte neuen Namen eingeben");
+        dialog.setContentText("Bitte Nutzer eingeben");
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
-            // do something
+            server.banAccount(result.get());
+            txtAreaServerlog.setText(txtAreaServerlog.getText() + new Message("Server", Mode.MESSAGE,
+                    "Nutzer: " + result.get() + " wurde geperrt.") + "\n");
         }
     }
 
@@ -83,6 +90,8 @@ public class ServerController implements Initializable, Runnable{
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
             server.addRoom(result.get());
+            txtAreaServerlog.setText(txtAreaServerlog.getText() + new Message("Server", Mode.MESSAGE,
+                    "neuer Raum: " + result.get() + " wurde angelegt.") + "\n");
         }
     }
 

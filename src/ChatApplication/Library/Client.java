@@ -6,7 +6,6 @@ import javafx.scene.control.TextArea;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.ConnectException;
 import java.net.Socket;
 
 public class Client {
@@ -24,11 +23,11 @@ public class Client {
         this.port = port;
         // connect client to server
         this.socket = new Socket(host, port);
-        this.activeRoom = "default";
-        System.out.println("Client successfully connected to server!");
+        this.activeRoom = "Lobby";
         // create object input/output streams
         this.oout = new ObjectOutputStream(socket.getOutputStream());
         this.oin = new ObjectInputStream(socket.getInputStream());
+        System.out.println("Client successfully connected to server!");     // todo löschen
     }
 
     // client with default host
@@ -37,11 +36,11 @@ public class Client {
         this.port = port;
         // connect client to server
         this.socket = new Socket(host, port);
-        this.activeRoom = "default";
+        this.activeRoom = "Lobby";
         // create object input/output streams
         this.oout = new ObjectOutputStream(socket.getOutputStream());
         this.oin = new ObjectInputStream(socket.getInputStream());
-        System.out.println("Client successfully connected to server!");
+        System.out.println("Client successfully connected to server!");     // todo löschen
     }
 
     // todo: dekonstruktor schreiben
@@ -64,6 +63,17 @@ public class Client {
     public Thread createThreadReceivedMessagesHandler(TextArea txtAreaChat, TextArea txtAreaState,
                                                       ListView listRooms, ListView listUser) {
         return new Thread(new ReceivedMessagesHandler(oin, name, txtAreaChat, txtAreaState, listRooms, listUser, this));
+    }
+
+    // disconnects client
+    public void disconnect() {
+        try {
+            oout.close();
+            oin.close();
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // sends object via output stream

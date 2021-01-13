@@ -31,27 +31,30 @@ class ReceivedMessagesHandler implements Runnable {
         while (true) {
             try {
                 Message message = (Message) oin.readObject();
-                System.out.println(message);            // todo
+                System.out.println("RMH: " + message);            // todo löschen
                 // server messages
                 if (message.getClient().equals("Server")) {
                     // show all other Users
-                    if (message.getMode() == Mode.USER_TRANSMIT) {
-                        //populateUserList(message.getText().substring(1, message.getText().length() - 1).split(","));
-                        populateList(message.getText().substring(1, message.getText().length() - 1).split(","), listUser);
-                    }
-                    else if (message.getMode() == Mode.ROOM_TRANSMIT) {
-                        System.out.println(message.getText());//todo
-                        //populateRoomsList(message.getText().substring(1, message.getText().length() - 1).split(","));
-                        populateList(message.getText().substring(1, message.getText().length() - 1).split(","), listRooms);
-                    }
-                    // server info messages
-                    else {      //todo entfernen?
-                        if(message.getRoom().equals(client.getActiveRoom()) && !message.getText().contains(client.getName())){
+                    switch (message.getMode()) {
+                        // server info messages
+                        case MESSAGE:
                             addMessageToTxtAreaChat(message);
-                        }
-                        else{
-                            System.out.println("message " + message.getText() + " dismissed; " + message.getRoom() + " " + client.getActiveRoom());//todo
-                        }
+                            break;
+                        case USER_TRANSMIT:
+                            populateList(message.getText().substring(1, message.getText().length() - 1).split(","),
+                                    listUser);
+                            break;
+                        case ROOM_TRANSMIT:
+                            System.out.println(message.getText()); //todo löschen
+                            populateList(message.getText().substring(1, message.getText().length() - 1).split(","),
+                                    listRooms);
+                            break;
+                        case DISCONNECT:
+                            addMessageToTxtAreaChat(message);
+                            client.disconnect();
+                            break;
+                        default:
+                            break;
                     }
                 }
                 // other client messages
@@ -60,7 +63,7 @@ class ReceivedMessagesHandler implements Runnable {
                 }
             } catch (Exception e) {
                 System.out.println("Connection closed.");
-                System.out.println("RMH : 1");  //todo
+                System.out.println("RMH : 1");  //todo löschen
                 e.printStackTrace();
                 System.exit(1);
             }
@@ -68,7 +71,7 @@ class ReceivedMessagesHandler implements Runnable {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
                 System.out.println("Connection closed.");
-                System.out.println("RMH : 2");  //todo
+                System.out.println("RMH : 2");  //todo löschen
                 e.printStackTrace();
                 System.exit(1);
             }
