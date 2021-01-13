@@ -4,6 +4,7 @@ import ChatApplication.Library.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
 import java.net.URL;
@@ -118,10 +119,19 @@ public class ServerController implements Initializable, Runnable{
         }
     }
 
-    public void listRoomsClicked(){
+//    public void listRoomsClicked(){
+//        String item = listUser.getSelectionModel().getSelectedItem().toString();
+//        if(item != null){
+//            txtAreaInfo.setText(String.format("%s befindet sich in Raum %s", item, server.getRoomNameForUser(server.getClientFromClientsByName(item))));
+//        }
+//    }
+
+    public void listUserClicked(MouseEvent mouseEvent) {
         String item = listUser.getSelectionModel().getSelectedItem().toString();
         if(item != null){
-            txtAreaInfo.setText(String.format("%s befindet sich in Raum %s", item, server.getRoomNameForUser(server.getClientFromClientsByName(item))));
+            txtAreaInfo.clear();
+            txtAreaInfo.setText(String.format("%s befindet sich in Raum %s", item,
+                    server.getRoomNameForUser(server.getClientFromClientsByName(item))));
         }
     }
 }

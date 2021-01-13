@@ -5,8 +5,6 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
-import java.util.Arrays;
-
 public class UserHandler implements Runnable {
     private final Server server;
     private User user;
@@ -128,7 +126,7 @@ public class UserHandler implements Runnable {
             public void run() {
                 object.getItems().clear();
                 for (String item : list) {
-                    object.getItems().add(item.strip() + " {" + server.getRoomNameForUser(server.getClientFromClientsByName(item)) + "}");
+                    object.getItems().add(item.strip());
                 }
             }
         });
