@@ -16,6 +16,7 @@ public class Client {
     private ObjectOutputStream oout;
     private ObjectInputStream oin;
     private String activeRoom;
+    private Thread thread = null;
 
     // client with specific host
     public Client(String host, int port) throws Exception {
@@ -62,7 +63,8 @@ public class Client {
     // returns an new thread for the ReceivedMessagesHandler
     public Thread createThreadReceivedMessagesHandler(TextArea txtAreaChat, TextArea txtAreaState,
                                                       ListView listRooms, ListView listUser) {
-        return new Thread(new ReceivedMessagesHandler(oin, name, txtAreaChat, txtAreaState, listRooms, listUser, this));
+        this.thread = new Thread(new ReceivedMessagesHandler(oin, name, txtAreaChat, txtAreaState, listRooms, listUser, this));
+        return this.thread;
     }
 
     // disconnects client
@@ -71,7 +73,9 @@ public class Client {
             oout.close();
             oin.close();
             socket.close();
-        } catch (IOException e) {
+            thread.sleep(20000);
+            thread.interrupt();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

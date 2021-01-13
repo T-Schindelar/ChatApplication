@@ -33,7 +33,7 @@ public class ChatController implements Initializable {
         client.createThreadReceivedMessagesHandler(txtAreaChat, txtAreaState, listRooms, listUser).start();
         // gets information about other clients and available rooms
         client.sendObject(new Message(client.getName(), Mode.INFORMATION_REQUEST, "", client.getActiveRoom()));
-        txtAreaState.setText(String.format("Verbunden mit %s:%d als %s", client.getHost(), client.getPort(), client.getName()));
+        txtAreaState.setText(String.format("Verbunden mit %s:%d als %s in Raum %s", client.getHost(), client.getPort(), client.getName(), client.getActiveRoom()));
         txtFieldMessage.setOnKeyPressed(keyEvent -> {
             if(keyEvent.getCode() == KeyCode.ENTER)
                 sendMessage();
@@ -82,11 +82,11 @@ public class ChatController implements Initializable {
     public void listRoomsClicked(){
         String previousRoom = client.getActiveRoom();
         Object item = listRooms.getSelectionModel().getSelectedItem();
-        if(listRooms.getSelectionModel().getSelectedItem() != null){
+        if(listRooms.getSelectionModel().getSelectedItem() != null && listRooms.getSelectionModel().getSelectedItem() != client.getActiveRoom()){
             client.setActiveRoom(item.toString());
             client.sendObject(new Message(client.getName(), Mode.ROOM_JOIN, previousRoom, item.toString()));
         }
-        System.out.println(client.getActiveRoom());
+        txtAreaState.setText(String.format("Verbunden mit %s:%d als %s in Raum %s", client.getHost(), client.getPort(), client.getName(), client.getActiveRoom()));
     }
 
     // sends a message to the server

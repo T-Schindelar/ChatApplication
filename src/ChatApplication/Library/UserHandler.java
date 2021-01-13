@@ -1,8 +1,11 @@
 package ChatApplication.Library;
 
+import javafx.application.Platform;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+
+import java.util.Arrays;
 
 public class UserHandler implements Runnable {
     private final Server server;
@@ -26,12 +29,6 @@ public class UserHandler implements Runnable {
     public void run() {
         try {
             this.server.accountAndEntryManagement(user);
-//            this.server.broadcastMessages(new Message("Server", Mode.MESSAGE, user +
-//                    " ist dem Chat beigetreten."));
-//            addMessageToTxtAreaServerlog(new Message("Server", Mode.MESSAGE,
-//                    user + " ist dem Chat beigetreten."));
-//            this.server.broadcastAllUsers();
-//            this.server.broadcastRooms();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -52,11 +49,12 @@ public class UserHandler implements Runnable {
                         populateList(server.getClientNames(), listUser);
                         populateList(server.getRoomNames(), listRooms);
 
-                        server.broadcastMessages(new Message("Server", Mode.MESSAGE, user +
+                        server.broadcastToRoom(new Message("Server", Mode.MESSAGE, user +
                                 " ist dem Chat beigetreten."));
                         addMessageToTxtAreaServerlog(new Message("Server", Mode.MESSAGE,
                                 user + " ist dem Chat beigetreten."));
-                        server.broadcastAllUsers();
+                        //server.broadcastAllUsers();
+                        server.broadcastRoomUsers("Lobby");
                         server.broadcastRooms();
                         break;
                     case LOGOUT:
@@ -64,7 +62,7 @@ public class UserHandler implements Runnable {
                         populateList(server.getClientNames(), listUser);
                         server.broadcastMessages(new Message("Server", Mode.MESSAGE, user +
                                 " hat den Chat verlassen."));
-                        server.broadcastAllUsers();
+                        server.broadcastAllUsers(); //todo
                         break;
                     case CHANGE_NAME:
                         String oldName = user.getName();
@@ -74,7 +72,8 @@ public class UserHandler implements Runnable {
                         populateList(server.getClientNames(), listUser);
                         server.broadcastToRoom(new Message("Server", Mode.MESSAGE, oldName +
                                 " hat den Namen zu " + newName + " geändert.", message.getRoom()));
-                        server.broadcastAllUsers();
+                        //server.broadcastAllUsers();
+                        server.broadcastRoomUsers(message.getRoom());
                         break;
                     case CHANGE_PASSWORD:
                         server.changeAccountPassword(user.getName(), message.getText());
@@ -98,6 +97,7 @@ public class UserHandler implements Runnable {
                 server.broadcastMessages(new Message("Server", Mode.LOGOUT,user +
                         " hat den Chat verlassen."));
                 server.broadcastAllUsers();
+                server.broadcastRoomUsers(server.getRoomNameForUser(user));
                 e.printStackTrace();
                 return;
             }
@@ -110,7 +110,7 @@ public class UserHandler implements Runnable {
                 populateList(server.getClientNames(), listUser);
                 server.broadcastMessages(new Message("Server", Mode.LOGOUT,user +
                         " hat den Chat verlassen."));
-                server.broadcastAllUsers();
+                server.broadcastRoomUsers(server.getRoomNameForUser(user));
                 return;
             }
         }
@@ -122,10 +122,17 @@ public class UserHandler implements Runnable {
     }
 
     public void populateList(String[] list, ListView object) {
-        object.getItems().clear();
-        for (String item : list) {
-            object.getItems().add(item.strip());
-        }
+        //Arrays.sort(list);
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                object.getItems().clear();
+                for (String item : list) {
+                    object.getItems().add(item.strip() + " {" + server.getRoomNameForUser(server.getClientFromClientsByName(item)) + "}");
+                }
+            }
+        });
+
     }
 
 }

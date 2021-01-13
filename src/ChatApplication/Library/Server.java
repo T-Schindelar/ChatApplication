@@ -185,6 +185,18 @@ public class Server {
         }
     }
 
+    public void broadcastRoomUsers(String roomName){
+        System.out.println(rooms.get(roomName));
+        try {
+            for(User user : rooms.get(roomName)){
+                user.getOout().writeObject(new Message("Server", Mode.USER_TRANSMIT, rooms.get(roomName).toString(), roomName));
+            }
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+
     // send list of rooms to all clients
     public void broadcastRooms() {
         try {
@@ -198,26 +210,6 @@ public class Server {
 
 
     // ------------------------- ROOM MANAGEMENT  -------------------------
-    // todo An Jakob: kann das weg?
-//    public void addRoom(String client, String name) throws IOException {
-//        try{
-//            if(!rooms.containsKey(name)) {
-//                ArrayList a = new ArrayList<User>();
-//                a.add(getUserByName(client));
-//                rooms.put(name, a);
-//                broadcastRooms();
-//            }
-//            else{
-//                System.out.println("Raum vorhanden");   //todo: richtige Rückmeldung an Nutzer
-//            }
-//            System.out.println(rooms);
-//        }
-//        catch (Exception e){
-//            System.out.println("CREATE_ROOM EXCEPTION");
-//            e.printStackTrace();
-//        }
-//
-//    }
 
     public void addRoom(String name) {
         if(!rooms.containsKey(name)) {
@@ -235,8 +227,8 @@ public class Server {
         User client = getClientFromClientsByName(message.getClient());
         rooms.get(message.getRoom()).add(client);       // adds client to new room
         rooms.get(message.getText()).remove(client);    // remove client from old room
-        System.out.println(rooms + " after");   // todo löschen
-        System.out.println(message.getText() + " " + message.getRoom());    // todo löschen
+        broadcastRoomUsers(message.getRoom());  //broadcast to new room
+        broadcastRoomUsers(message.getText()); //broadcast to old room
     }
 
     // returns all room names as a String array
@@ -245,6 +237,18 @@ public class Server {
         return roomNames.substring(1,roomNames.length()-1).split(",");
     }
 
+    public String getRoomNameForUser(User user){
+        for (String key : rooms.keySet()){
+            if(rooms.get(key).contains(user)){
+                return key;
+            }
+        }
+        return null;
+    }
+
+    public void removeFromRoom(String roomName, User user){
+        rooms.get(roomName).remove(user);
+    }
 
     // ------------------------- USER/CLIENT MANAGEMENT  -------------------------
     // adds a client to the clients list
@@ -257,6 +261,7 @@ public class Server {
     // removes a client from the clients list
     public void removeUser(User client) {
         clients.remove(client);
+        removeFromRoom(getRoomNameForUser(client), client);
     }
 
     // gets a client from the clients list by name
@@ -283,7 +288,7 @@ public class Server {
     // disconnects a client from the clients list
     public void disconnectUser(String name) {
         User client = getClientFromClientsByName(name);
-        sendMessage(client, new Message("Server", Mode.DISCONNECT, "Sie wurden vom Server ausgschlossen!"));
+        sendMessage(client, new Message("Server", Mode.DISCONNECT, "Sie wurden vom Server ausgschlossen!\n Das Fenster schließt in 20 Sekunden!"));
         removeUser(client);
         broadcastMessages(new Message("Server", Mode.MESSAGE, name + " hat den Chat verlassen."));
         broadcastAllUsers();

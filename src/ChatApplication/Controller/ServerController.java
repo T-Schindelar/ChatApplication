@@ -92,6 +92,7 @@ public class ServerController implements Initializable, Runnable{
             server.addRoom(result.get());
             txtAreaServerlog.setText(txtAreaServerlog.getText() + new Message("Server", Mode.MESSAGE,
                     "neuer Raum: " + result.get() + " wurde angelegt.") + "\n");
+            listRooms.getItems().add(result.get());
         }
     }
 
@@ -114,6 +115,13 @@ public class ServerController implements Initializable, Runnable{
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
             // do something
+        }
+    }
+
+    public void listRoomsClicked(){
+        String item = listUser.getSelectionModel().getSelectedItem().toString();
+        if(item != null){
+            txtAreaInfo.setText(String.format("%s befindet sich in Raum %s", item, server.getRoomNameForUser(server.getClientFromClientsByName(item))));
         }
     }
 }

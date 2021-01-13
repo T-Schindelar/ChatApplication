@@ -1,9 +1,11 @@
 package ChatApplication.Library;
 
+import javafx.application.Platform;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 
 import java.io.ObjectInputStream;
+import java.util.Arrays;
 
 class ReceivedMessagesHandler implements Runnable {
     private final ObjectInputStream oin;
@@ -41,6 +43,7 @@ class ReceivedMessagesHandler implements Runnable {
                             addMessageToTxtAreaChat(message);
                             break;
                         case USER_TRANSMIT:
+                            System.out.println(message.getText()); //todo löschen
                             populateList(message.getText().substring(1, message.getText().length() - 1).split(","),
                                     listUser);
                             break;
@@ -79,10 +82,19 @@ class ReceivedMessagesHandler implements Runnable {
     }
 
     public void populateList(String[] list, ListView object) {
-        object.getItems().clear();
-        for (String item : list) {
-            object.getItems().add(item.strip());
-        }
+        System.out.println(Arrays.toString(list));  //todo löschen
+        //Arrays.sort(list);
+        System.out.println(Arrays.toString(list));  //todo löschen
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                object.getItems().clear();
+                for (String item : list) {
+                    System.out.println(item); //todo löschen
+                    object.getItems().add(item.strip());
+                }
+            }
+        });
     }
 
     public void addMessageToTxtAreaChat(Message message) {
