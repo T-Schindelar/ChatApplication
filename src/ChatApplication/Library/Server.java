@@ -176,8 +176,6 @@ public class Server {
     public void broadcastToRoom(Message message) {
         try {
             ArrayList<User> users = rooms.get(message.getRoom());
-//            System.out.println(users);
-            System.out.println("222");
             for (User client : users) {
                 client.getOout().writeObject(message);
             }
@@ -250,7 +248,6 @@ public class Server {
                 rooms.remove(name);
                 broadcastRooms();
                 broadcastRoomUsers("Lobby");
-                System.out.println(rooms); //todo
             }
         }
         catch (Exception e){

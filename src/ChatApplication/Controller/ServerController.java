@@ -142,7 +142,6 @@ public class ServerController implements Initializable, Runnable {
             server.setSelectedRoom(item.toString());
         }
         else{
-            System.out.println("leer");   //todo
             server.setSelectedRoom("");
         }
     }
