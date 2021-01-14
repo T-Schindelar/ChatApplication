@@ -51,6 +51,8 @@ public class ChatController implements Initializable {
         if (result.isPresent()) {
             client.sendObject(new Message(client.getName(), Mode.CHANGE_NAME, result.get(), client.getActiveRoom()));
             client.setName(result.get());
+            txtFieldState.setText(String.format("Verbunden mit %s:%d als %s in Raum %s", client.getHost(), client.getPort(),
+                    client.getName(), client.getActiveRoom()));
         }
     }
 

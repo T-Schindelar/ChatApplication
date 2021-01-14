@@ -1,5 +1,8 @@
 package ChatApplication.Library;
 
+import javafx.application.Platform;
+import javafx.scene.control.ListView;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
@@ -15,6 +18,7 @@ public class Server {
     private List<Account> accounts;
     private final AccountDbService service;
     private final HashMap<String, ArrayList<User>> rooms;
+    private String selectedRoom;
 
     public Server(int port) throws Exception {
         this.port = port;
@@ -24,6 +28,7 @@ public class Server {
         this.accounts = service.getAllAccounts();
         this.rooms = new HashMap<String, ArrayList<User>>();
         this.rooms.put("Lobby", new ArrayList<User>());
+        this.selectedRoom = "";
     }
 
     public User listenForNewClients() throws IOException {
@@ -95,7 +100,8 @@ public class Server {
 
     // changes client name in the server and the account in the database
     public void changeAccountName(String oldName, String newName) {
-        getClientFromClientsByName(oldName).setName(newName);
+        User u = getClientFromClientsByName(oldName);
+        u.setName(newName);
         service.updateName(oldName, newName);
         accounts = service.getAllAccounts();
     }
@@ -218,6 +224,31 @@ public class Server {
         }
     }
 
+    public void changeRoomName(String room, String newName, ListView list){
+        System.out.println(this.selectedRoom);
+        if(!this.selectedRoom.isEmpty()){
+            rooms.put( newName, rooms.remove( room ));
+            System.out.println(rooms);
+            broadcastRooms();
+            this.selectedRoom = "";
+            populateList(rooms.keySet().toArray(new String[0]), list);
+        }
+    }
+
+    public void deleteRoom(String name){
+        if(rooms.keySet().contains(name)){
+            for(User u : rooms.get(name)){
+                System.out.println(u);
+                rooms.get("Lobby").add(u);
+                System.out.println(u);
+            }
+            rooms.remove(name);
+            System.out.println(rooms);
+            broadcastRooms();
+            broadcastRoomUsers("Lobby");
+        }
+    }
+
     // adds User client to the entered room and removes it from the old room
     public void addToRoom(Message message) {
         User client = getClientFromClientsByName(message.getClient());
@@ -311,7 +342,23 @@ public class Server {
     public int getPort() {
         return port;
     }
-
+    public String getSelectedRoom() { return this.selectedRoom; }
+    public void setSelectedRoom(String selectedRoom) {
+        this.selectedRoom = selectedRoom;
+        System.out.println(this.selectedRoom);} //todo
     // setter
 
+
+    public void populateList(String[] list, ListView object) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                object.getItems().clear();
+                for (String item : list) {
+                    object.getItems().add(item.strip());
+                }
+            }
+        });
+
+    }
 }

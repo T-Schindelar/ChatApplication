@@ -43,8 +43,8 @@ public class UserHandler implements Runnable {
                                 "{" + message.getRoom() + "} " + message.getText(), ""));
                         break;
                     case INFORMATION_REQUEST:
-                        populateList(server.getClientNames(), listUser);
-                        populateList(server.getRoomNames(), listRooms);
+                        server.populateList(server.getClientNames(), listUser); //geändert
+                        server.populateList(server.getRoomNames(), listRooms);  //geändert
                         server.broadcastToRoom(new Message("Server", Mode.MESSAGE, user +
                                 " ist dem Chat beigetreten."));
                         addMessageToTxtAreaServerlog(new Message("Server", Mode.MESSAGE,
@@ -63,9 +63,8 @@ public class UserHandler implements Runnable {
                     case CHANGE_NAME:
                         String oldName = user.getName();
                         String newName = message.getText();
-                        user.setName(newName);
                         server.changeAccountName(oldName, newName);
-                        populateList(server.getClientNames(), listUser);
+                        server.populateList(server.getClientNames(), listUser); //geändert
                         server.broadcastToRoom(new Message("Server", Mode.MESSAGE, oldName +
                                 " hat den Namen zu " + newName + " geändert.", message.getRoom()));
                         server.broadcastRoomUsers(message.getRoom());
@@ -77,7 +76,7 @@ public class UserHandler implements Runnable {
                         break;
                     case DELETE_ACCOUNT:
                         server.deleteAccount(user.getName());
-                        populateList(server.getClientNames(), listUser);
+                        server.populateList(server.getClientNames(), listUser); //geändert
                         break;
                     case ROOM_CREATE:
                         //server.addRoom(message.getClient(), message.getText());
@@ -91,10 +90,11 @@ public class UserHandler implements Runnable {
                 addMessageToTxtAreaServerlog(new Message(user.getName(), Mode.MESSAGE, "hat den Chat verlassen."));
                 String room = server.getRoomNameForUser(user);
                 server.removeUser(user);
-                populateList(server.getClientNames(), listUser);
+                server.populateList(server.getClientNames(), listUser); //geändert
                 server.broadcastToRoom(new Message("Server", Mode.MESSAGE, user +
                         " hat den Chat verlassen.", room));
                 server.broadcastRoomUsers(room);
+                e.printStackTrace();
                 return;
             }
             try {
@@ -103,10 +103,11 @@ public class UserHandler implements Runnable {
                 addMessageToTxtAreaServerlog(new Message(user.getName(), Mode.MESSAGE, "hat den Chat verlassen."));
                 String room = server.getRoomNameForUser(user);
                 server.removeUser(user);
-                populateList(server.getClientNames(), listUser);
+                server.populateList(server.getClientNames(), listUser); //geändert
                 server.broadcastToRoom(new Message("Server", Mode.MESSAGE, user +
                         " hat den Chat verlassen.", room));
                 server.broadcastRoomUsers(room);
+                e.printStackTrace();
                 return;
             }
         }
@@ -118,17 +119,17 @@ public class UserHandler implements Runnable {
     }
 
     // todo liste sortiert ausgeben
-    public void populateList(String[] list, ListView object) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                object.getItems().clear();
-                for (String item : list) {
-                    object.getItems().add(item.strip());
-                }
-            }
-        });
-
-    }
+//    public void populateList(String[] list, ListView object) {
+//        Platform.runLater(new Runnable() {
+//            @Override
+//            public void run() {
+//                object.getItems().clear();
+//                for (String item : list) {
+//                    object.getItems().add(item.strip());
+//                }
+//            }
+//        });
+//
+//    }
 
 }

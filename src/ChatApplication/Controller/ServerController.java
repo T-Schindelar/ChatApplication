@@ -106,7 +106,7 @@ public class ServerController implements Initializable, Runnable {
         dialog.setContentText("Bitte neuen Namen eingeben");
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
-            // do something
+            server.changeRoomName(server.getSelectedRoom(), result.get(), listRooms);
         }
     }
 
@@ -117,27 +117,32 @@ public class ServerController implements Initializable, Runnable {
         dialog.setContentText("Bitte Raumnamen eingeben");
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
-            // do something
+            server.deleteRoom(result.get());
+            listRooms.getItems().clear();
+            server.populateList(server.getRoomNames(), listRooms);
         }
     }
 
     // writes information about the client in the info box
     public void listUserClicked(MouseEvent mouseEvent) {
-        String item = listUser.getSelectionModel().getSelectedItem().toString();
+        Object item = listUser.getSelectionModel().getSelectedItem();   //String item = listUser.getSelectionModel().getSelectedItem().toString();
         if (item != null) {
             txtAreaInfo.clear();
-            txtAreaInfo.setText(String.format("%s befindet sich in Raum %s", item,
-                    server.getRoomNameForUser(server.getClientFromClientsByName(item))));
+            txtAreaInfo.setText(String.format("%s befindet sich in Raum %s", item.toString(),
+                    server.getRoomNameForUser(server.getClientFromClientsByName(item.toString()))));
         }
     }
 
     // todo
-//    public void listRoomsClicked(){
-//        String item = listUser.getSelectionModel().getSelectedItem().toString();
-//        if(item != null){
-//            txtAreaInfo.setText(String.format("%s befindet sich in Raum %s", item,
-//            server.getRoomNameForUser(server.getClientFromClientsByName(item))));
-//        }
-//    }
+    public void listRoomsClicked(){
+        Object item = listRooms.getSelectionModel().getSelectedItem();
+        if(item != null){
+            server.setSelectedRoom(item.toString());
+        }
+        else{
+            System.out.println("leer");   //todo
+            server.setSelectedRoom("");
+        }
+    }
 
 }

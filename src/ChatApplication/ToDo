@@ -11,3 +11,4 @@ todo list
 - Räume - beim Raumwechsel Chat leeren
 - wenn Zeit dann Chattabs
 - temp. Ausschließen - Client kappen + Zeitstempel für Cooldown
+- Login hängt sich auf, wenn mit geändertem Namen angemeldet
