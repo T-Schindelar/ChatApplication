@@ -38,6 +38,7 @@ public class UserHandler implements Runnable {
                 // checks message mode
                 switch (message.getMode()) {
                     case MESSAGE:
+                        System.out.println("333"); //todo
                         server.broadcastToRoom(message);
                         addMessageToTxtAreaServerlog(new Message(message.getClient(), message.getMode(),
                                 "{" + message.getRoom() + "} " + message.getText(), ""));

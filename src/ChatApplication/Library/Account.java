@@ -5,7 +5,7 @@ import java.util.Objects;
 public class Account implements java.io.Serializable {
     private String name;
     private final String password;
-    private final boolean banned;
+    private boolean banned;       //todo make final again
 
     public Account(String name, String password, boolean banned) {
         this.name = name;
@@ -34,6 +34,7 @@ public class Account implements java.io.Serializable {
     public void setName(String name) {
         this.name = name;
     }
+    public void setBanned(boolean value) { this.banned = value; }
 
 
     @Override

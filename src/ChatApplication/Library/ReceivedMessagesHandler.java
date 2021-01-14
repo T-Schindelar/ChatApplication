@@ -53,6 +53,11 @@ class ReceivedMessagesHandler implements Runnable {
                             addMessageToTxtAreaChat(message);
                             client.disconnect();
                             break;
+                        case UPDATE_ROOM:
+                            this.client.setActiveRoom(message.getText());
+                            txtFieldState.setText(String.format("Verbunden mit %s:%d als %s in Raum %s", client.getHost(), client.getPort(),
+                                    client.getName(), client.getActiveRoom()));
+                            break;
                         default:
                             break;
                     }

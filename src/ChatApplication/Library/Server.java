@@ -48,6 +48,7 @@ public class Server {
             while (true) {
                 Mode mode = (Mode) client.getOin().readObject();
                 Account loginAccount = (Account) client.getOin().readObject();
+                loginAccount.setBanned(false);
                 // registration
                 boolean registrationSuccessful = true;
                 switch (mode) {
@@ -68,7 +69,11 @@ public class Server {
                             return;
                         }
                     case LOGIN:
-                        if (service.get(loginAccount.getName()).isBanned()) {
+                        Account account = service.get(loginAccount.getName());
+                        if (account == null) {
+                            sendMessage(client, new Message("Server", Mode.ERROR,
+                                    "Unbekannter Nutzer."));
+                        } else if (account.isBanned()){
                             sendMessage(client, new Message("Server", Mode.ERROR,
                                     "Dieses Benutzerkonto wurde gesperrt."));
                         } else if (accounts.contains(loginAccount) && !isLoggedIn(loginAccount)) {
@@ -171,6 +176,8 @@ public class Server {
     public void broadcastToRoom(Message message) {
         try {
             ArrayList<User> users = rooms.get(message.getRoom());
+//            System.out.println(users);
+            System.out.println("222");
             for (User client : users) {
                 client.getOout().writeObject(message);
             }
@@ -225,10 +232,8 @@ public class Server {
     }
 
     public void changeRoomName(String room, String newName, ListView list){
-        System.out.println(this.selectedRoom);
         if(!this.selectedRoom.isEmpty()){
             rooms.put( newName, rooms.remove( room ));
-            System.out.println(rooms);
             broadcastRooms();
             this.selectedRoom = "";
             populateList(rooms.keySet().toArray(new String[0]), list);
@@ -236,16 +241,20 @@ public class Server {
     }
 
     public void deleteRoom(String name){
-        if(rooms.keySet().contains(name)){
-            for(User u : rooms.get(name)){
-                System.out.println(u);
-                rooms.get("Lobby").add(u);
-                System.out.println(u);
+        try{
+            if(rooms.keySet().contains(name)){
+                for(User u : rooms.get(name)){
+                    rooms.get("Lobby").add(u);
+                    u.getOout().writeObject(new Message("Server", Mode.UPDATE_ROOM, "Lobby", "Lobby"));
+                }
+                rooms.remove(name);
+                broadcastRooms();
+                broadcastRoomUsers("Lobby");
+                System.out.println(rooms); //todo
             }
-            rooms.remove(name);
-            System.out.println(rooms);
-            broadcastRooms();
-            broadcastRoomUsers("Lobby");
+        }
+        catch (Exception e){
+            e.printStackTrace();
         }
     }
 
@@ -339,14 +348,13 @@ public class Server {
     }
 
     // ------------------------- GETTER & SETTER -------------------------
+    //getter
     public int getPort() {
         return port;
     }
     public String getSelectedRoom() { return this.selectedRoom; }
-    public void setSelectedRoom(String selectedRoom) {
-        this.selectedRoom = selectedRoom;
-        System.out.println(this.selectedRoom);} //todo
     // setter
+    public void setSelectedRoom(String selectedRoom) { this.selectedRoom = selectedRoom; }
 
 
     public void populateList(String[] list, ListView object) {

@@ -45,8 +45,9 @@ public class Client {
 
     // handles login process
     public Message login(Mode mode, String name, String password) throws IOException, ClassNotFoundException {
-        if (name.isEmpty() || password.isEmpty())
-            return new Message("", Mode.ERROR, "Bitte Namen und Passwort eingeben!", "");
+        if (name.isEmpty() || password.isEmpty()) {
+            return new Message("Server", Mode.ERROR, "Bitte Namen und Passwort eingeben!", "");
+        }
         oout.writeObject(mode);
         oout.flush();
         oout.writeObject(new Account(name.strip(), password));
