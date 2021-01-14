@@ -4,18 +4,18 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<GridPane prefHeight="560.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ChatApplication.Controller.ServerController">
+<GridPane prefHeight="700.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ChatApplication.Controller.ServerController">
     <columnConstraints>
-        <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="331.0" minWidth="135.0" prefWidth="331.0" />
-        <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="473.0" minWidth="269.0" prefWidth="269.0" />
+        <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" prefWidth="350.0" />
+        <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" prefWidth="250.0" />
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints maxHeight="57.0" minHeight="7.0" prefHeight="26.0" valignment="TOP" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="136.0" minHeight="48.0" prefHeight="58.0" valignment="TOP" vgrow="SOMETIMES" />
-      <RowConstraints maxHeight="383.0" minHeight="41.0" prefHeight="307.0" valignment="TOP" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="369.0" minHeight="67.0" prefHeight="166.0" valignment="TOP" vgrow="SOMETIMES" />
-      <RowConstraints />
-      <RowConstraints />
+        <RowConstraints valignment="TOP" vgrow="SOMETIMES" />
+        <RowConstraints valignment="TOP" vgrow="SOMETIMES" />
+      <RowConstraints prefHeight="500.0" valignment="TOP" vgrow="SOMETIMES" />
+        <RowConstraints valignment="TOP" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="0.0" minHeight="0.0" prefHeight="0.0" />
+      <RowConstraints maxHeight="0.0" minHeight="0.0" prefHeight="0.0" />
     </rowConstraints>
     <children>
         <MenuBar GridPane.columnSpan="2">
