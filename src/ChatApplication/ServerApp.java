@@ -22,7 +22,6 @@ public class ServerApp extends Application {
     @Override
     public void stop() throws Exception {
         super.stop();
-        System.out.println("stop");     // todo
         System.exit(0);
     }
 

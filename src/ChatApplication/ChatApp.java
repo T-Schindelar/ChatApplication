@@ -12,7 +12,6 @@ public class ChatApp extends Application {
     public void start(Stage primaryStage) throws Exception{
         // get root
         Parent loginFormRoot = FXMLLoader.load(getClass().getResource("Resource/loginForm.fxml"));
-        System.out.println("test");
 
         // show and start controller
         primaryStage.setTitle("ChatApp");
@@ -24,7 +23,6 @@ public class ChatApp extends Application {
     @Override
     public void stop() throws Exception {
         super.stop();
-        System.out.println("stop"); // todo löschen
         System.exit(0);
     }
 

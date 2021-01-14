@@ -112,20 +112,14 @@ public class ServerController implements Initializable, Runnable{
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Raum löschen");
         dialog.setHeaderText("");
-        dialog.setContentText("Bitte neuen Namen eingeben");
+        dialog.setContentText("Bitte Raumnamen eingeben");
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
             // do something
         }
     }
 
-//    public void listRoomsClicked(){
-//        String item = listUser.getSelectionModel().getSelectedItem().toString();
-//        if(item != null){
-//            txtAreaInfo.setText(String.format("%s befindet sich in Raum %s", item, server.getRoomNameForUser(server.getClientFromClientsByName(item))));
-//        }
-//    }
-
+    // writes information about the client in the info box
     public void listUserClicked(MouseEvent mouseEvent) {
         String item = listUser.getSelectionModel().getSelectedItem().toString();
         if(item != null){
@@ -134,4 +128,13 @@ public class ServerController implements Initializable, Runnable{
                     server.getRoomNameForUser(server.getClientFromClientsByName(item))));
         }
     }
+
+    // todo
+//    public void listRoomsClicked(){
+//        String item = listUser.getSelectionModel().getSelectedItem().toString();
+//        if(item != null){
+//            txtAreaInfo.setText(String.format("%s befindet sich in Raum %s", item, server.getRoomNameForUser(server.getClientFromClientsByName(item))));
+//        }
+//    }
+
 }

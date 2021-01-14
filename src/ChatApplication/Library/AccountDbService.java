@@ -89,7 +89,7 @@ public class AccountDbService {
 
     public void updateBanned(String name, boolean banned) {
         try {
-            String sql = String.format("Update Accounts Set Banned = '%b' WHERE Name = '%s'",
+            String sql = String.format("Update Accounts Set Banned = %b WHERE Name = '%s'",
                     banned, name);
             statement.executeUpdate(sql);
         } catch (SQLException throwables) {
@@ -104,17 +104,4 @@ public class AccountDbService {
             throwables.printStackTrace();
         }
     }
-
-//     todo löschen
-//    public static void main( String args[] ) {
-//        AccountDbService service = new AccountDbService();
-//        Account account = new Account("Tobias", "123");
-//
-//        System.out.println(service.get(account));
-//        service.delete(new Account("Jakob", "123"));
-//        service.set(new Account("Jakob", "123"));
-//        service.updatePassword(account, "12");
-//        System.out.println(service.getAllAccounts().toString());
-//        service.close();
-//    }
 }

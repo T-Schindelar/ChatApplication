@@ -2,6 +2,7 @@ package ChatApplication.Library;
 
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -22,30 +23,25 @@ public class Client {
     public Client(String host, int port) throws Exception {
         this.host = host;
         this.port = port;
+        this.activeRoom = "Lobby";
         // connect client to server
         this.socket = new Socket(host, port);
-        this.activeRoom = "Lobby";
         // create object input/output streams
         this.oout = new ObjectOutputStream(socket.getOutputStream());
         this.oin = new ObjectInputStream(socket.getInputStream());
-        System.out.println("Client successfully connected to server!");     // todo löschen
     }
 
     // client with default host
     public Client(int port) throws Exception {
         this.host = "localhost";
         this.port = port;
+        this.activeRoom = "Lobby";
         // connect client to server
         this.socket = new Socket(host, port);
-        this.activeRoom = "Lobby";
         // create object input/output streams
         this.oout = new ObjectOutputStream(socket.getOutputStream());
         this.oin = new ObjectInputStream(socket.getInputStream());
-        System.out.println("Client successfully connected to server!");     // todo löschen
     }
-
-    // todo: dekonstruktor schreiben
-
 
     // handles login process
     public Message login(Mode mode, String name, String password) throws IOException, ClassNotFoundException {
@@ -61,9 +57,9 @@ public class Client {
     }
 
     // returns an new thread for the ReceivedMessagesHandler
-    public Thread createThreadReceivedMessagesHandler(TextArea txtAreaChat, TextArea txtAreaState,
+    public Thread createThreadReceivedMessagesHandler(TextArea txtAreaChat, TextField txtFieldState,
                                                       ListView listRooms, ListView listUser) {
-        this.thread = new Thread(new ReceivedMessagesHandler(oin, name, txtAreaChat, txtAreaState, listRooms, listUser, this));
+        this.thread = new Thread(new ReceivedMessagesHandler(oin, txtAreaChat, txtFieldState, listRooms, listUser, this));
         return this.thread;
     }
 
@@ -73,7 +69,7 @@ public class Client {
             oout.close();
             oin.close();
             socket.close();
-            thread.sleep(20000);
+            thread.sleep(20000);    // sleeps 20 seconds
             thread.interrupt();
         } catch (Exception e) {
             e.printStackTrace();
@@ -101,7 +97,7 @@ public class Client {
     public void setName(String name) { this.name = name; }
     public void setActiveRoom(String name) { this.activeRoom = name; }
 
-    // todo: evtl. wieder löschen
+    // todo: löschen
     @Override
     public String toString() {
         return "Client{" +

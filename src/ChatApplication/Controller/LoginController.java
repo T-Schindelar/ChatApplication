@@ -42,6 +42,7 @@ public class LoginController implements Initializable {
     }
 
     public void btnRegistration(ActionEvent actionEvent) throws Exception {
+        // login() returns true for a valid login/registration
         Message message = client.login(Mode.REGISTRATION, txtFieldName.getText(), pswFieldPassword.getText());
         if (message.getMode() == Mode.ERROR) {
             txtFieldError.setText(message.getText());

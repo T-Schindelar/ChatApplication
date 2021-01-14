@@ -11,40 +11,12 @@ public class User {
     private String name;
     private final ObjectOutputStream oout;
     private final ObjectInputStream oin;
-//    private String color;     // ToDo:
 
     public User(Socket client, String name, ObjectInputStream oin) throws IOException {
         this.client = client;
         this.name = name;
         this.oin = oin;
         this.oout = new ObjectOutputStream(client.getOutputStream());
-//        this.color = ColorInt.getColor();      // ToDo:
-    }
-
-    // disconnects client
-    // disconnects client
-    public void disconnect() {
-        try {
-            client.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // getter
-    public ObjectInputStream getOin() {
-        return oin;
-    }
-    public ObjectOutputStream getOout() {
-        return oout;
-    }
-    public String getName() {
-        return name;
-    }
-
-    // setter
-    public void setName(String name) {
-        this.name = name;
     }
 
     @Override
@@ -63,5 +35,21 @@ public class User {
     @Override
     public String toString() {
         return name;
+    }
+
+    // getter
+    public ObjectInputStream getOin() {
+        return oin;
+    }
+    public ObjectOutputStream getOout() {
+        return oout;
+    }
+    public String getName() {
+        return name;
+    }
+
+    // setter
+    public void setName(String name) {
+        this.name = name;
     }
 }

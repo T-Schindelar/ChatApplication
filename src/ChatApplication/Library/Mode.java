@@ -4,6 +4,7 @@ package ChatApplication.Library;
 public enum Mode {
     CHANGE_NAME,
     CHANGE_PASSWORD,
+    DELETE_ACCOUNT,
     DISCONNECT,
     ERROR,
     INFORMATION_REQUEST,

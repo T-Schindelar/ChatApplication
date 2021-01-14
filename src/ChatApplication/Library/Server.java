@@ -24,7 +24,6 @@ public class Server {
         this.accounts = service.getAllAccounts();
         this.rooms = new HashMap<String, ArrayList<User>>();
         this.rooms.put("Lobby", new ArrayList<User>());
-        System.out.println("Port " + port + " ist geöffnet.");
     }
 
     public User listenForNewClients() throws IOException {
@@ -46,39 +45,38 @@ public class Server {
                 Account loginAccount = (Account) client.getOin().readObject();
                 // registration
                 boolean registrationSuccessful = true;
-                if (mode == Mode.REGISTRATION) {
-                    for (Account account : accounts) {
-                        if (account.getName().equalsIgnoreCase(loginAccount.getName())) {
-                            sendMessage(client, new Message("Server", Mode.ERROR,
-                                    "Bitte wählen Sie einen anderen Namen."));
-                            registrationSuccessful = false;
-                            break;
+                switch (mode){
+                    case REGISTRATION:
+                        for (Account account : accounts) {
+                            if (account.getName().equalsIgnoreCase(loginAccount.getName())) {
+                                sendMessage(client, new Message("Server", Mode.ERROR,
+                                        "Bitte wählen Sie einen anderen Namen."));
+                                registrationSuccessful = false;
+                                break;
+                            }
                         }
-                    }
-                    if (registrationSuccessful) {
-                        client.setName(loginAccount.getName());
-                        addUser(client);
-                        addAccount(loginAccount);
-                        sendMessage(client, new Message("Server", Mode.MESSAGE, ""));
-                        return;
-                    }
-                }
-                // login
-                else {
-                    if(service.get(loginAccount.getName()).isBanned()) {
-                        sendMessage(client, new Message("Server",Mode.ERROR,
-                                "Dieses Benutzerkonto wurde gesperrt."));
-                    }
-                    else if (accounts.contains(loginAccount) && !isLoggedIn(loginAccount)) {
-                        client.setName(loginAccount.getName());
-                        addUser(client);
-                        sendMessage(client, new Message("Server", Mode.MESSAGE, ""));
-                        return;
-                    }
-                    else {
-                        sendMessage(client, new Message("Server",Mode.ERROR,
-                                "Fehler! Bitte versuchen Sie es erneut."));
-                    }
+                        if (registrationSuccessful) {
+                            client.setName(loginAccount.getName());
+                            addUser(client);
+                            addAccount(loginAccount);
+                            sendMessage(client, new Message("Server", Mode.MESSAGE, ""));
+                            return;
+                        }
+                    case LOGIN:
+                        if(service.get(loginAccount.getName()).isBanned()) {
+                            sendMessage(client, new Message("Server",Mode.ERROR,
+                                    "Dieses Benutzerkonto wurde gesperrt."));
+                        }
+                        else if (accounts.contains(loginAccount) && !isLoggedIn(loginAccount)) {
+                            client.setName(loginAccount.getName());
+                            addUser(client);
+                            sendMessage(client, new Message("Server", Mode.MESSAGE, ""));
+                            return;
+                        }
+                        else {
+                            sendMessage(client, new Message("Server",Mode.ERROR,
+                                    "Fehler! Bitte versuchen Sie es erneut."));
+                        }
                 }
             }
         } catch (Exception e) {
@@ -115,12 +113,15 @@ public class Server {
         removeAccount(getAccountFromAccountsByName(name));
         service.delete(name);
         User client = getClientFromClientsByName(name);
+        String room = getRoomNameForUser(client);
         removeUser(client);
-        sendMessage(client, new Message("Server", Mode.MESSAGE,
-                "Ihr Benutzerkonto wurde erfolgreich geschlossen"));
+        broadcastToRoom(new Message("Server", Mode.MESSAGE, name + " hat den Chat verlassen.", room));
+        broadcastRoomUsers(room);
+        sendMessage(client, new Message("Server", Mode.DISCONNECT,
+                "Ihr Benutzerkonto wurde erfolgreich gelöscht.\nDie Anwendung schließt sich in 20 Sekunden!\n"));
     }
 
-    // gets a account from the accounts list by name
+    // returns a account from the accounts list by name
     public Account getAccountFromAccountsByName(String name) {
         for (Account account : accounts) {
             if (account.getName().equals(name))
@@ -150,7 +151,7 @@ public class Server {
         }
     }
 
-    // send message to all clients
+    // sends message to all clients
     public void broadcastMessages(Message message) {
         try {
             for (User client : clients) {
@@ -162,7 +163,7 @@ public class Server {
         }
     }
 
-    // send message to all room clients
+    // sends message to all room clients
     public void broadcastToRoom(Message message) {
         try {
             ArrayList<User> users = rooms.get(message.getRoom());
@@ -185,11 +186,12 @@ public class Server {
         }
     }
 
+    // send list of clients to all room clients
     public void broadcastRoomUsers(String roomName){
-        System.out.println(rooms.get(roomName));
         try {
-            for(User user : rooms.get(roomName)){
-                user.getOout().writeObject(new Message("Server", Mode.USER_TRANSMIT, rooms.get(roomName).toString(), roomName));
+            for(User client : rooms.get(roomName)){
+                client.getOout().writeObject(new Message("Server", Mode.USER_TRANSMIT,
+                        rooms.get(roomName).toString(), roomName));
             }
         }
         catch(IOException e){
@@ -201,7 +203,8 @@ public class Server {
     public void broadcastRooms() {
         try {
             for (User client : clients) {
-                    client.getOout().writeObject(new Message("Server", Mode.ROOM_TRANSMIT, rooms.keySet().toString()));
+                    client.getOout().writeObject(new Message("Server", Mode.ROOM_TRANSMIT,
+                            rooms.keySet().toString()));
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -210,16 +213,12 @@ public class Server {
 
 
     // ------------------------- ROOM MANAGEMENT  -------------------------
-
+    // adds a new room to rooms
     public void addRoom(String name) {
         if(!rooms.containsKey(name)) {
             rooms.put(name, new ArrayList<User>());
             broadcastRooms();
         }
-        else{
-            System.out.println("Raum vorhanden");   //todo: richtige Rückmeldung an Server
-        }
-        System.out.println(rooms);
     }
 
     // adds User client to the entered room and removes it from the old room
@@ -237,18 +236,21 @@ public class Server {
         return roomNames.substring(1,roomNames.length()-1).split(",");
     }
 
-    public String getRoomNameForUser(User user){
+    // returns room name in which the client currently is
+    public String getRoomNameForUser(User client){
         for (String key : rooms.keySet()){
-            if(rooms.get(key).contains(user)){
+            if(rooms.get(key).contains(client)){
                 return key;
             }
         }
         return null;
     }
 
-    public void removeFromRoom(String roomName, User user){
-        rooms.get(roomName).remove(user);
+    // removes a client from a room
+    public void removeFromRoom(String roomName, User client){
+        rooms.get(roomName).remove(client);
     }
+
 
     // ------------------------- USER/CLIENT MANAGEMENT  -------------------------
     // adds a client to the clients list
@@ -257,14 +259,13 @@ public class Server {
         rooms.get("Lobby").add(client);
     }
 
-    // todo aus den raumlisten entfernen
     // removes a client from the clients list
     public void removeUser(User client) {
         clients.remove(client);
         removeFromRoom(getRoomNameForUser(client), client);
     }
 
-    // gets a client from the clients list by name
+    // returns a client from the clients list by name
     public User getClientFromClientsByName(String name) {
         for (User client : clients) {
             if (client.getName().equals(name))
@@ -288,21 +289,25 @@ public class Server {
     // disconnects a client from the clients list
     public void disconnectUser(String name) {
         User client = getClientFromClientsByName(name);
-        sendMessage(client, new Message("Server", Mode.DISCONNECT, "Sie wurden vom Server ausgschlossen!\n Das Fenster schließt in 20 Sekunden!"));
+        String room = getRoomNameForUser(client);
+        sendMessage(client, new Message("Server", Mode.DISCONNECT, "Sie wurden vom Server ausgschlossen!\n" +
+                "Die Anwendung schließt sich in 20 Sekunden!\n"));
         removeUser(client);
-        broadcastMessages(new Message("Server", Mode.MESSAGE, name + " hat den Chat verlassen."));
-        broadcastAllUsers();
+        broadcastToRoom(new Message("Server", Mode.MESSAGE, name + " hat den Chat verlassen.", room));
+        broadcastRoomUsers(room);
     }
 
     // bans a account and removes the client
     public void banAccount(String name) {
         User client = getClientFromClientsByName(name);
+        String room = getRoomNameForUser(client);
         removeUser(client);
         removeAccount(getAccountFromAccountsByName(name));
         service.updateBanned(name, true);
-        sendMessage(client, new Message("Server", Mode.MESSAGE, "Ihr Benutzerkonto wurde gesperrt!"));
-        broadcastMessages(new Message("Server", Mode.MESSAGE, name + " hat den Chat verlassen."));
-        broadcastAllUsers();
+        sendMessage(client, new Message("Server", Mode.DISCONNECT, "Ihr Benutzerkonto wurde gesperrt!\n" +
+                "Die Anwendung schließt sich in 20 Sekunden!\n"));
+        broadcastToRoom(new Message("Server", Mode.MESSAGE, name + " hat den Chat verlassen.", room));
+        broadcastRoomUsers(room);
     }
 
     // ------------------------- GETTER & SETTER -------------------------

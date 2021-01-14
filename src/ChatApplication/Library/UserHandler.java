@@ -43,25 +43,23 @@ public class UserHandler implements Runnable {
                                 "{" + message.getRoom() + "} " + message.getText(), ""));
                         break;
                     case INFORMATION_REQUEST:
-                        System.out.println(message);
                         populateList(server.getClientNames(), listUser);
                         populateList(server.getRoomNames(), listRooms);
-
                         server.broadcastToRoom(new Message("Server", Mode.MESSAGE, user +
                                 " ist dem Chat beigetreten."));
                         addMessageToTxtAreaServerlog(new Message("Server", Mode.MESSAGE,
                                 user + " ist dem Chat beigetreten."));
-                        //server.broadcastAllUsers();
                         server.broadcastRoomUsers("Lobby");
                         server.broadcastRooms();
                         break;
-                    case LOGOUT:
-                        server.removeUser(user);
-                        populateList(server.getClientNames(), listUser);
-                        server.broadcastMessages(new Message("Server", Mode.MESSAGE, user +
-                                " hat den Chat verlassen."));
-                        server.broadcastAllUsers(); //todo
-                        break;
+                    // todo
+//                    case LOGOUT:
+//                        server.removeUser(user);
+//                        populateList(server.getClientNames(), listUser);
+//                        server.broadcastMessages(new Message("Server", Mode.MESSAGE, user +
+//                                " hat den Chat verlassen."));
+//                        server.broadcastAllUsers();
+//                        break;
                     case CHANGE_NAME:
                         String oldName = user.getName();
                         String newName = message.getText();
@@ -70,16 +68,18 @@ public class UserHandler implements Runnable {
                         populateList(server.getClientNames(), listUser);
                         server.broadcastToRoom(new Message("Server", Mode.MESSAGE, oldName +
                                 " hat den Namen zu " + newName + " geändert.", message.getRoom()));
-                        //server.broadcastAllUsers();
                         server.broadcastRoomUsers(message.getRoom());
                         break;
                     case CHANGE_PASSWORD:
                         server.changeAccountPassword(user.getName(), message.getText());
-                        server.sendMessage(user, new Message("server", Mode.MESSAGE,"Änderung erfolgreich.",
+                        server.sendMessage(user, new Message("Server", Mode.MESSAGE,"Änderung erfolgreich.",
                                 message.getRoom()));
                         break;
+                    case DELETE_ACCOUNT:
+                        server.deleteAccount(user.getName());
+                        populateList(server.getClientNames(), listUser);
+                        break;
                     case ROOM_CREATE:
-                        System.out.println("ROOM_CREATE");
                         //server.addRoom(message.getClient(), message.getText());
                     case ROOM_JOIN:
                         server.addToRoom(message);
@@ -88,26 +88,22 @@ public class UserHandler implements Runnable {
                         break;
                 }
             } catch (Exception e) {
-                System.out.println(user + " hat den Chat verlassen.");      // todo löschen
-                addMessageToTxtAreaServerlog(new Message(user.getName(), Mode.LOGOUT, " hat den Chat verlassen.", ""));
+                addMessageToTxtAreaServerlog(new Message(user.getName(), Mode.MESSAGE, "hat den Chat verlassen."));
                 server.removeUser(user);
                 populateList(server.getClientNames(), listUser);
-                server.broadcastMessages(new Message("Server", Mode.LOGOUT,user +
-                        " hat den Chat verlassen."));
-                server.broadcastAllUsers();
+                server.broadcastToRoom(new Message("Server", Mode.MESSAGE,user +
+                        " hat den Chat verlassen.", server.getRoomNameForUser(user)));
                 server.broadcastRoomUsers(server.getRoomNameForUser(user));
-                e.printStackTrace();
                 return;
             }
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
-                System.out.println(user + " hat den Chat verlassen..");
-                addMessageToTxtAreaServerlog(new Message(user.getName(), Mode.LOGOUT, " hat den Chat verlassen.", ""));
+                addMessageToTxtAreaServerlog(new Message(user.getName(), Mode.MESSAGE, "hat den Chat verlassen."));
                 server.removeUser(user);
                 populateList(server.getClientNames(), listUser);
-                server.broadcastMessages(new Message("Server", Mode.LOGOUT,user +
-                        " hat den Chat verlassen."));
+                server.broadcastToRoom(new Message("Server", Mode.MESSAGE,user +
+                        " hat den Chat verlassen.", server.getRoomNameForUser(user)));
                 server.broadcastRoomUsers(server.getRoomNameForUser(user));
                 return;
             }
@@ -119,8 +115,8 @@ public class UserHandler implements Runnable {
         txtAreaServerlog.setText(txtAreaServerlog.getText() + message + "\n");
     }
 
+    // todo liste sortiert ausgeben
     public void populateList(String[] list, ListView object) {
-        //Arrays.sort(list);
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
