@@ -13,9 +13,9 @@ public class Client {
     private final String host;
     private final int port;
     private String name;
-    private Socket socket;
-    private ObjectOutputStream oout;
-    private ObjectInputStream oin;
+    private final Socket socket;
+    private final ObjectOutputStream oout;
+    private final ObjectInputStream oin;
     private String activeRoom;
     private Thread thread = null;
 
@@ -59,7 +59,8 @@ public class Client {
     // returns an new thread for the ReceivedMessagesHandler
     public Thread createThreadReceivedMessagesHandler(TextArea txtAreaChat, TextField txtFieldState,
                                                       ListView listRooms, ListView listUser) {
-        this.thread = new Thread(new ReceivedMessagesHandler(oin, txtAreaChat, txtFieldState, listRooms, listUser, this));
+        this.thread = new Thread(new ReceivedMessagesHandler(oin, txtAreaChat, txtFieldState, listRooms,
+                listUser, this));
         return this.thread;
     }
 
@@ -69,7 +70,7 @@ public class Client {
             oout.close();
             oin.close();
             socket.close();
-            thread.sleep(20000);    // sleeps 20 seconds
+            Thread.sleep(20000);    // sleeps 20 seconds
             thread.interrupt();
         } catch (Exception e) {
             e.printStackTrace();
@@ -89,13 +90,23 @@ public class Client {
     public String getName() {
         return name;
     }
-    public int getPort() { return port; }
-    public String getHost() { return host; }
-    public String getActiveRoom() { return activeRoom; }
+    public int getPort() {
+        return port;
+    }
+    public String getHost() {
+        return host;
+    }
+    public String getActiveRoom() {
+        return activeRoom;
+    }
 
     // setter
-    public void setName(String name) { this.name = name; }
-    public void setActiveRoom(String name) { this.activeRoom = name; }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public void setActiveRoom(String name) {
+        this.activeRoom = name;
+    }
 
     // todo: löschen
     @Override

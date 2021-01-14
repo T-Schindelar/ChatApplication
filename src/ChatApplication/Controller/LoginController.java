@@ -35,8 +35,7 @@ public class LoginController implements Initializable {
         Message message = client.login(Mode.LOGIN, txtFieldName.getText(), pswFieldPassword.getText());
         if (message.getMode() == Mode.ERROR) {
             txtFieldError.setText(message.getText());
-        }
-        else {
+        } else {
             changeWindow(actionEvent);
         }
     }
@@ -46,8 +45,7 @@ public class LoginController implements Initializable {
         Message message = client.login(Mode.REGISTRATION, txtFieldName.getText(), pswFieldPassword.getText());
         if (message.getMode() == Mode.ERROR) {
             txtFieldError.setText(message.getText());
-        }
-        else {
+        } else {
             changeWindow(actionEvent);
         }
     }

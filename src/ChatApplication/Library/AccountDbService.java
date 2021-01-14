@@ -43,7 +43,7 @@ public class AccountDbService {
         }
     }
 
-    public List<Account> getAllAccounts(){
+    public List<Account> getAllAccounts() {
         try {
             List<Account> resultList = new ArrayList<>();
             String sql = "SELECT * FROM Accounts";

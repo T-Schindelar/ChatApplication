@@ -15,7 +15,7 @@ class ReceivedMessagesHandler implements Runnable {
     private final TextField txtFieldState;
     private final ListView listRooms;
     private final ListView listUser;
-    private Client client;
+    private final Client client;
 
     public ReceivedMessagesHandler(ObjectInputStream oin, TextArea txtAreaChat,
                                    TextField txtFieldState, ListView listRooms, ListView listUser, Client client) {

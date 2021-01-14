@@ -4,8 +4,8 @@ import java.util.Objects;
 
 public class Account implements java.io.Serializable {
     private String name;
-    private String password;
-    private boolean banned;
+    private final String password;
+    private final boolean banned;
 
     public Account(String name, String password, boolean banned) {
         this.name = name;
@@ -34,6 +34,7 @@ public class Account implements java.io.Serializable {
     public void setName(String name) {
         this.name = name;
     }
+
 
     @Override
     public boolean equals(Object o) {

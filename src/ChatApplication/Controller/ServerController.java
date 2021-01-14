@@ -3,7 +3,10 @@ package ChatApplication.Controller;
 import ChatApplication.Library.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
@@ -11,7 +14,7 @@ import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-public class ServerController implements Initializable, Runnable{
+public class ServerController implements Initializable, Runnable {
     public TextArea txtAreaServerlog;
     public TextArea txtAreaInfo;
     public TextField txtFieldStateServer;
@@ -31,15 +34,14 @@ public class ServerController implements Initializable, Runnable{
         }
     }
 
-    public void run(){
+    public void run() {
         try {
             while (true) {
                 User client = server.listenForNewClients();
                 new Thread(new UserHandler(server, client, txtAreaServerlog,
                         txtFieldStateServer, listUser, listRooms)).start();
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -122,7 +124,7 @@ public class ServerController implements Initializable, Runnable{
     // writes information about the client in the info box
     public void listUserClicked(MouseEvent mouseEvent) {
         String item = listUser.getSelectionModel().getSelectedItem().toString();
-        if(item != null){
+        if (item != null) {
             txtAreaInfo.clear();
             txtAreaInfo.setText(String.format("%s befindet sich in Raum %s", item,
                     server.getRoomNameForUser(server.getClientFromClientsByName(item))));
@@ -133,7 +135,8 @@ public class ServerController implements Initializable, Runnable{
 //    public void listRoomsClicked(){
 //        String item = listUser.getSelectionModel().getSelectedItem().toString();
 //        if(item != null){
-//            txtAreaInfo.setText(String.format("%s befindet sich in Raum %s", item, server.getRoomNameForUser(server.getClientFromClientsByName(item))));
+//            txtAreaInfo.setText(String.format("%s befindet sich in Raum %s", item,
+//            server.getRoomNameForUser(server.getClientFromClientsByName(item))));
 //        }
 //    }
 

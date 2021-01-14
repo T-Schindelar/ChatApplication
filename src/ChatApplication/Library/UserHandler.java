@@ -7,7 +7,7 @@ import javafx.scene.control.TextField;
 
 public class UserHandler implements Runnable {
     private final Server server;
-    private User user;
+    private final User user;
     private final TextArea txtAreaServerlog;
     private final TextField txtFieldStateServer;
     private final ListView listUser;
@@ -72,7 +72,7 @@ public class UserHandler implements Runnable {
                         break;
                     case CHANGE_PASSWORD:
                         server.changeAccountPassword(user.getName(), message.getText());
-                        server.sendMessage(user, new Message("Server", Mode.MESSAGE,"Änderung erfolgreich.",
+                        server.sendMessage(user, new Message("Server", Mode.MESSAGE, "Änderung erfolgreich.",
                                 message.getRoom()));
                         break;
                     case DELETE_ACCOUNT:
@@ -89,22 +89,24 @@ public class UserHandler implements Runnable {
                 }
             } catch (Exception e) {
                 addMessageToTxtAreaServerlog(new Message(user.getName(), Mode.MESSAGE, "hat den Chat verlassen."));
+                String room = server.getRoomNameForUser(user);
                 server.removeUser(user);
                 populateList(server.getClientNames(), listUser);
-                server.broadcastToRoom(new Message("Server", Mode.MESSAGE,user +
-                        " hat den Chat verlassen.", server.getRoomNameForUser(user)));
-                server.broadcastRoomUsers(server.getRoomNameForUser(user));
+                server.broadcastToRoom(new Message("Server", Mode.MESSAGE, user +
+                        " hat den Chat verlassen.", room));
+                server.broadcastRoomUsers(room);
                 return;
             }
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
                 addMessageToTxtAreaServerlog(new Message(user.getName(), Mode.MESSAGE, "hat den Chat verlassen."));
+                String room = server.getRoomNameForUser(user);
                 server.removeUser(user);
                 populateList(server.getClientNames(), listUser);
-                server.broadcastToRoom(new Message("Server", Mode.MESSAGE,user +
-                        " hat den Chat verlassen.", server.getRoomNameForUser(user)));
-                server.broadcastRoomUsers(server.getRoomNameForUser(user));
+                server.broadcastToRoom(new Message("Server", Mode.MESSAGE, user +
+                        " hat den Chat verlassen.", room));
+                server.broadcastRoomUsers(room);
                 return;
             }
         }

@@ -9,7 +9,7 @@ import javafx.stage.Stage;
 public class ChatApp extends Application {
 
     @Override
-    public void start(Stage primaryStage) throws Exception{
+    public void start(Stage primaryStage) throws Exception {
         // get root
         Parent loginFormRoot = FXMLLoader.load(getClass().getResource("Resource/loginForm.fxml"));
 

@@ -36,7 +36,9 @@ public class Message implements java.io.Serializable {
     public String getText() {
         return text;
     }
-    public String getRoom(){return room;}
+    public String getRoom() {
+        return room;
+    }
 
     @Override
     public String toString() {

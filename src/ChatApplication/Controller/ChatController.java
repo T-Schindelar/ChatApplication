@@ -30,11 +30,12 @@ public class ChatController implements Initializable {
         client.createThreadReceivedMessagesHandler(txtAreaChat, txtFieldState, listRooms, listUser).start();
         // gets information about other clients and available rooms
         client.sendObject(new Message(client.getName(), Mode.INFORMATION_REQUEST, "", client.getActiveRoom()));
-        txtFieldState.setText(String.format("Verbunden mit %s:%d als %s in Raum %s", client.getHost(), client.getPort(), client.getName(), client.getActiveRoom()));
+        txtFieldState.setText(String.format("Verbunden mit %s:%d als %s in Raum %s", client.getHost(), client.getPort(),
+                client.getName(), client.getActiveRoom()));
         txtFieldMessage.setOnKeyPressed(keyEvent -> {
-            if(keyEvent.getCode() == KeyCode.ENTER)
+            if (keyEvent.getCode() == KeyCode.ENTER)
                 sendMessage();
-        } );
+        });
     }
 
     public void btnSendMessage(ActionEvent actionEvent) {
@@ -59,7 +60,7 @@ public class ChatController implements Initializable {
         alert.setHeaderText("");
         alert.setContentText("Sind Sie sich sicher?");
         Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK){
+        if (result.get() == ButtonType.OK) {
             client.sendObject(new Message(client.getName(), Mode.DELETE_ACCOUNT, "", client.getActiveRoom()));
         }
     }
@@ -88,23 +89,26 @@ public class ChatController implements Initializable {
 //    }
 
     // switches rooms
-    public void listRoomsClicked(){
+    public void listRoomsClicked() {
         String previousRoom = client.getActiveRoom();
         Object item = listRooms.getSelectionModel().getSelectedItem();
-        if(listRooms.getSelectionModel().getSelectedItem() != null && listRooms.getSelectionModel().getSelectedItem() != client.getActiveRoom()){
+        if (listRooms.getSelectionModel().getSelectedItem() != null &&
+                listRooms.getSelectionModel().getSelectedItem() != client.getActiveRoom()) {
             client.setActiveRoom(item.toString());
             client.sendObject(new Message(client.getName(), Mode.ROOM_JOIN, previousRoom, item.toString()));
         }
-        txtFieldState.setText(String.format("Verbunden mit %s:%d als %s in Raum %s", client.getHost(), client.getPort(), client.getName(), client.getActiveRoom()));
+        txtFieldState.setText(String.format("Verbunden mit %s:%d als %s in Raum %s",
+                client.getHost(), client.getPort(), client.getName(), client.getActiveRoom()));
     }
 
     // sends a message to the server
     public void sendMessage() {
-        client.sendObject(new Message(client.getName(), Mode.MESSAGE, txtFieldMessage.getText(), client.getActiveRoom()));
+        client.sendObject(new Message(client.getName(), Mode.MESSAGE, txtFieldMessage.getText(),
+                client.getActiveRoom()));
         txtFieldMessage.clear();
     }
 
-        // todo
+    // todo
 //    public void createRoom(String name){
 //        client.sendObject(new Message(client.getName(), Mode.ROOM_CREATE, name, ""));
 //    }
