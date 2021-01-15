@@ -48,7 +48,7 @@ public class Server {
             while (true) {
                 Mode mode = (Mode) client.getOin().readObject();
                 Account loginAccount = (Account) client.getOin().readObject();
-                loginAccount.setBanned(false);
+                loginAccount.setBanned(false);      // todo Jakob warum? ist bereits per default false
                 // registration
                 boolean registrationSuccessful = true;
                 switch (mode) {

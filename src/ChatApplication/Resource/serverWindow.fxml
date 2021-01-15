@@ -18,7 +18,7 @@
       <RowConstraints maxHeight="0.0" minHeight="0.0" prefHeight="0.0" />
     </rowConstraints>
     <children>
-        <MenuBar GridPane.columnSpan="2">
+        <MenuBar focusTraversable="false" GridPane.columnSpan="2">
             <menus>
                 <Menu mnemonicParsing="false" text="Nutzerverwaltung">
                     <items>
@@ -36,7 +36,7 @@
                 </Menu>
             </menus>
         </MenuBar>
-      <Label contentDisplay="TOP" layoutX="351.0" layoutY="472.0" text="Serverstatus" GridPane.rowIndex="1">
+      <Label contentDisplay="TOP" focusTraversable="false" layoutX="351.0" layoutY="472.0" text="Serverstatus" GridPane.rowIndex="1">
          <GridPane.margin>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </GridPane.margin>
@@ -46,7 +46,7 @@
             <Insets bottom="10.0" left="10.0" right="10.0" top="30.0" />
          </GridPane.margin>
       </TextField>
-      <Label contentDisplay="TOP" layoutX="351.0" layoutY="352.0" text="Serverlog" GridPane.rowIndex="2">
+      <Label contentDisplay="TOP" focusTraversable="false" layoutX="351.0" layoutY="352.0" text="Serverlog" GridPane.rowIndex="2">
          <GridPane.margin>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </GridPane.margin>
@@ -56,7 +56,7 @@
                 <Insets bottom="10.0" left="10.0" right="10.0" top="30.0" />
             </GridPane.margin>
         </TextArea>
-        <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" GridPane.columnIndex="1" GridPane.rowIndex="2">
+        <TabPane focusTraversable="false" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" GridPane.columnIndex="1" GridPane.rowIndex="2">
             <tabs>
                 <Tab text="Benutzer">
                     <content>
@@ -83,7 +83,7 @@
                 <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
             </GridPane.margin>
         </TabPane>
-      <Label contentDisplay="TOP" layoutX="324.0" layoutY="375.0" text="Informationen" GridPane.columnIndex="1" GridPane.rowIndex="3">
+      <Label contentDisplay="TOP" focusTraversable="false" layoutX="324.0" layoutY="375.0" text="Informationen" GridPane.columnIndex="1" GridPane.rowIndex="3">
          <GridPane.margin>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </GridPane.margin>
