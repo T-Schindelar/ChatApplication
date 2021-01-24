@@ -34,6 +34,7 @@ public class UserHandler implements Runnable {
             try {
                 // gets client messages
                 Message message = (Message) user.getOin().readObject();
+                System.out.println(message + " " + message.getRoom());
 
                 // checks message mode
                 switch (message.getMode()) {
@@ -79,7 +80,25 @@ public class UserHandler implements Runnable {
                         server.populateList(server.getClientNames(), listUser); //geändert
                         break;
                     case ROOM_CREATE:
-                        //server.addRoom(message.getClient(), message.getText());
+                        Message m = new Message(message.getClient(), Mode.ROOM_JOIN, message.getRoom(), message.getText());
+                        if(!server.getRoomsKeySet().contains(m.getRoom())){
+                            server.addRoom(message.getText());
+                            server.addToRoom(m);
+                            server.updateRoom(m);
+                            listRooms.getItems().add(m.getRoom());
+                            addMessageToTxtAreaServerlog(new Message(m.getClient(), Mode.MESSAGE, String.format("%s hat Raum %s erstellt", m.getClient(), m.getRoom())));
+                        }
+                        break;
+                    case ROOM_CREATE_PRIVATE:       //todo weitermachen
+                        Message m1 = new Message(message.getClient(), Mode.ROOM_JOIN, message.getRoom(), message.getText());
+                        if(!server.getPrivateRoomsKeySet().contains(m1.getRoom())){
+                            server.addPrivateRoom(message.getText());
+                            server.addToRoom(m1);
+                            server.updateRoom(m1);
+                            listRooms.getItems().add(m1.getRoom());
+                            addMessageToTxtAreaServerlog(new Message(m1.getClient(), Mode.MESSAGE, String.format("%s hat Raum %s erstellt", m1.getClient(), m1.getRoom())));
+                        }
+                        break;
                     case ROOM_JOIN:
                         server.addToRoom(message);
                         break;

@@ -54,6 +54,7 @@ class ReceivedMessagesHandler implements Runnable {
                             client.disconnect();
                             break;
                         case UPDATE_ROOM:
+                            System.out.println("UPDATE");       //todo
                             this.client.setActiveRoom(message.getText());
                             txtFieldState.setText(String.format("Verbunden mit %s:%d als %s in Raum %s", client.getHost(), client.getPort(),
                                     client.getName(), client.getActiveRoom()));

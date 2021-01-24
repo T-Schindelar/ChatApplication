@@ -17,6 +17,7 @@ public class Client {
     private final ObjectOutputStream oout;
     private final ObjectInputStream oin;
     private String activeRoom;
+    private String selectedUser;
     private Thread thread = null;
 
     // client with specific host
@@ -29,6 +30,7 @@ public class Client {
         // create object input/output streams
         this.oout = new ObjectOutputStream(socket.getOutputStream());
         this.oin = new ObjectInputStream(socket.getInputStream());
+        this.selectedUser = "";
     }
 
     // client with default host
@@ -101,12 +103,20 @@ public class Client {
         return activeRoom;
     }
 
+    public String getSelectedUser(){
+        return selectedUser;
+    }
+
     // setter
     public void setName(String name) {
         this.name = name;
     }
     public void setActiveRoom(String name) {
         this.activeRoom = name;
+    }
+
+    public void setSelectedUser(String name){
+        this.selectedUser = name;
     }
 
     // todo: löschen

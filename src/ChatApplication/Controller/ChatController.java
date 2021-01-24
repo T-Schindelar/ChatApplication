@@ -3,6 +3,7 @@ package ChatApplication.Controller;
 import ChatApplication.Library.Client;
 import ChatApplication.Library.Message;
 import ChatApplication.Library.Mode;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -79,16 +80,30 @@ public class ChatController implements Initializable {
     }
 
     // todo
-//    public void menuItemCreateRoom() {
-//        TextInputDialog dialog = new TextInputDialog();
-//        dialog.setTitle("Raum erstellen");
-//        dialog.setHeaderText("");
-//        dialog.setContentText("Bitte Raumnamen eingeben");
-//        Optional<String> result = dialog.showAndWait();
-//        if (result.isPresent()){
-//            createRoom(result.get());
-//        }
-//    }
+    public void menuItemCreateRoom() {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Raum erstellen");
+        dialog.setHeaderText("");
+        dialog.setContentText("Bitte Raumnamen eingeben");
+        Optional<String> result = dialog.showAndWait();
+        if (result.isPresent()){
+            createRoom(result.get());
+        }
+    }
+
+    public void menuItemCreatePrivateRoom(){
+        ChoiceDialog dialog = new ChoiceDialog();
+        dialog.setTitle("Privaten Raum erstellen");
+        dialog.setHeaderText("");
+        for(Object item : listUser.getItems()){
+            dialog.getItems().add((String)item);
+        }
+        dialog.setContentText("Bitte Nutzer eingeben");
+        Optional<String> result = dialog.showAndWait();
+        if (result.isPresent()){
+            createPrivateRoom(result.get());
+        }
+    }
 
     // switches rooms
     public void listRoomsClicked() {
@@ -103,6 +118,17 @@ public class ChatController implements Initializable {
                 client.getHost(), client.getPort(), client.getName(), client.getActiveRoom()));
     }
 
+    public void listUsersClicked(){
+        Object item = listUser.getSelectionModel().getSelectedItem();
+        if(item != null){
+            client.setSelectedUser(item.toString());
+        }
+        else{
+            client.setSelectedUser("");
+        }
+        System.out.println(client.getSelectedUser());   //todo
+    }
+
     // sends a message to the server
     public void sendMessage() {
         client.sendObject(new Message(client.getName(), Mode.MESSAGE, txtFieldMessage.getText(),
@@ -111,7 +137,11 @@ public class ChatController implements Initializable {
     }
 
     // todo
-//    public void createRoom(String name){
-//        client.sendObject(new Message(client.getName(), Mode.ROOM_CREATE, name, ""));
-//    }
+    public void createRoom(String name){
+        client.sendObject(new Message(client.getName(), Mode.ROOM_CREATE, name, client.getActiveRoom()));
+    }
+
+    public void createPrivateRoom(String user){
+
+    }
 }

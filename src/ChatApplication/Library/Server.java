@@ -10,6 +10,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 public class Server {
     private final int port;
@@ -18,6 +19,7 @@ public class Server {
     private List<Account> accounts;
     private final AccountDbService service;
     private final HashMap<String, ArrayList<User>> rooms;
+    private final HashMap<String, ArrayList<User>> privateRooms;
     private String selectedRoom;
 
     public Server(int port) throws Exception {
@@ -27,6 +29,7 @@ public class Server {
         this.service = new AccountDbService();
         this.accounts = service.getAllAccounts();
         this.rooms = new HashMap<String, ArrayList<User>>();
+        this.privateRooms = new HashMap<String, ArrayList<User>>();
         this.rooms.put("Lobby", new ArrayList<User>());
         this.selectedRoom = "";
     }
@@ -48,7 +51,7 @@ public class Server {
             while (true) {
                 Mode mode = (Mode) client.getOin().readObject();
                 Account loginAccount = (Account) client.getOin().readObject();
-                loginAccount.setBanned(false);      // todo Jakob warum? ist bereits per default false
+                //loginAccount.setBanned(false);      // todo Jakob warum? ist bereits per default false
                 // registration
                 boolean registrationSuccessful = true;
                 switch (mode) {
@@ -229,6 +232,12 @@ public class Server {
         }
     }
 
+    public void addPrivateRoom(String name){
+        if (!privateRooms.containsKey(name)) {
+            privateRooms.put(name, new ArrayList<User>());
+        }
+    }
+
     public void changeRoomName(String room, String newName, ListView list){
         if(!this.selectedRoom.isEmpty()){
             rooms.put( newName, rooms.remove( room ));
@@ -248,6 +257,17 @@ public class Server {
                 rooms.remove(name);
                 broadcastRooms();
                 broadcastRoomUsers("Lobby");
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void updateRoom(Message message){
+        try {
+            for(User u : rooms.get(message.getRoom())){
+                u.getOout().writeObject(new Message("Server", Mode.UPDATE_ROOM, message.getRoom(), "Lobby"));
             }
         }
         catch (Exception e){
@@ -350,8 +370,12 @@ public class Server {
         return port;
     }
     public String getSelectedRoom() { return this.selectedRoom; }
+    public Set<String> getRoomsKeySet() { return rooms.keySet(); }
+    public Set<String> getPrivateRoomsKeySet() { return rooms.keySet(); }
+
     // setter
-    public void setSelectedRoom(String selectedRoom) { this.selectedRoom = selectedRoom; }
+    public void setSelectedRoom(String selectedRoom) { this.selectedRoom = selectedRoom;
+        System.out.println(selectedRoom);}
 
 
     public void populateList(String[] list, ListView object) {
