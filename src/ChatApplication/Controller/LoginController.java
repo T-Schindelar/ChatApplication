@@ -4,14 +4,18 @@ import ChatApplication.Library.Client;
 import ChatApplication.Library.Message;
 import ChatApplication.Library.Mode;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -30,17 +34,26 @@ public class LoginController implements Initializable {
         }
     }
 
-    public void btnLogin(ActionEvent actionEvent) throws Exception {
+    public void btnLogin(ActionEvent actionEvent) {
+        login(actionEvent);
+    }
+
+    public void enter(KeyEvent keyEvent) {
+        if (keyEvent.getCode() == KeyCode.ENTER)
+            login(keyEvent);
+    }
+
+    private void login(Event event) {
         // login() returns true for a valid login/registration
         Message message = client.login(Mode.LOGIN, txtFieldName.getText(), pswFieldPassword.getText());
         if (message.getMode() == Mode.ERROR) {
             txtFieldError.setText(message.getText());
         } else {
-            changeWindow(actionEvent);
+            changeWindow(event);
         }
     }
 
-    public void btnRegistration(ActionEvent actionEvent) throws Exception {
+    public void btnRegistration(ActionEvent actionEvent) {
         // login() returns true for a valid login/registration
         Message message = client.login(Mode.REGISTRATION, txtFieldName.getText(), pswFieldPassword.getText());
         if (message.getMode() == Mode.ERROR) {
@@ -51,19 +64,23 @@ public class LoginController implements Initializable {
     }
 
     // changes the window from login to chat
-    private void changeWindow(ActionEvent actionEvent) throws Exception {
-        client.setName(txtFieldName.getText());
-        // get current window stage information
-        Stage currentWindow = (Stage) (((Node) actionEvent.getSource()).getScene().getWindow());
+    private void changeWindow(Event event) {
+        try {
+            client.setName(txtFieldName.getText());
+            // get current window stage information
+            Stage currentWindow = (Stage) (((Node) event.getSource()).getScene().getWindow());
 
-        // setup new window
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("../Resource/chatWindow.fxml"));
-        loader.setController(new ChatController(client));
+            // setup new window
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../Resource/chatWindow.fxml"));
+            loader.setController(new ChatController(client));
 
-        // show new window
-        currentWindow.setTitle("ChatApp");
-        currentWindow.setScene(new Scene(loader.load()));
-        currentWindow.show();
+            // show new window
+            currentWindow.setTitle("ChatApp");
+            currentWindow.show();
+            currentWindow.setScene(new Scene(loader.load()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // getter

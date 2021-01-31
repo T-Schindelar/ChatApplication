@@ -51,7 +51,6 @@ public class Server {
             while (true) {
                 Mode mode = (Mode) client.getOin().readObject();
                 Account loginAccount = (Account) client.getOin().readObject();
-                //loginAccount.setBanned(false);      // todo Jakob warum? ist bereits per default false
                 // registration
                 boolean registrationSuccessful = true;
                 switch (mode) {
@@ -108,8 +107,9 @@ public class Server {
 
     // changes client name in the server and the account in the database
     public void changeAccountName(String oldName, String newName) {
-        User u = getClientFromClientsByName(oldName);
-        u.setName(newName);
+        User client = getClientFromClientsByName(oldName);
+        client.setName(newName);
+        client.setName(newName);
         service.updateName(oldName, newName);
         accounts = service.getAllAccounts();
     }
@@ -127,7 +127,7 @@ public class Server {
         User client = getClientFromClientsByName(name);
         String room = getRoomNameForUser(client);
         removeUser(client);
-        broadcastToRoom(new Message("Server", Mode.MESSAGE, name + " hat den Chat verlassen.", room));
+        broadcastToRoom(new Message("Server", Mode.MESSAGE, room, name + " hat den Chat verlassen."));
         broadcastRoomUsers(room);
         sendMessage(client, new Message("Server", Mode.DISCONNECT,
                 "Ihr Benutzerkonto wurde erfolgreich gelöscht.\nDie Anwendung schließt sich in 20 Sekunden!\n"));
@@ -158,6 +158,7 @@ public class Server {
     public void sendMessage(User client, Message message) {
         try {
             client.getOout().writeObject(message);
+            client.getOout().flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -165,60 +166,51 @@ public class Server {
 
     // sends message to all clients
     public void broadcastMessages(Message message) {
-        try {
-            for (User client : clients) {
-                client.getOout().writeObject(message);
-                client.getOout().flush();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        for (User client : clients) {
+            sendMessage(client, message);
         }
     }
 
     // sends message to all room clients
     public void broadcastToRoom(Message message) {
-        try {
-            ArrayList<User> users = rooms.get(message.getRoom());
-            for (User client : users) {
-                client.getOout().writeObject(message);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        ArrayList<User> users = rooms.get(message.getRoom());
+        for (User client : users) {
+            sendMessage(client, message);
+        }
+    }
+
+    // todo weitermachen, nachrichten nur an private fenster
+    // sends message to all room clients
+    public void broadcastToPrivateRoom(Message message) {
+        System.out.println(message);    // todo
+        ArrayList<User> users = privateRooms.get(message.getRoom());
+        System.out.println("users: "+ users);      // todo
+        for (User client : users) {
+            System.out.println(client);      // todo
+            sendMessage(client, message);
         }
     }
 
     // send list of clients to all clients
     public void broadcastAllUsers() {
-        try {
-            for (User client : clients) {
-                client.getOout().writeObject(new Message("Server", Mode.USER_TRANSMIT, clients.toString()));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        for (User client : clients) {
+            sendMessage(client, new Message("Server", Mode.USER_TRANSMIT, clients.toString()));
         }
     }
 
     // send list of clients to all room clients
     public void broadcastRoomUsers(String roomName) {
-        try {
-            for (User client : rooms.get(roomName)) {
-                client.getOout().writeObject(new Message("Server", Mode.USER_TRANSMIT,
-                        rooms.get(roomName).toString(), roomName));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        for (User client : rooms.get(roomName)) {
+            sendMessage(client, new Message("Server", Mode.USER_TRANSMIT, roomName,
+                    rooms.get(roomName).toString()));
         }
     }
 
     // send list of rooms to all clients
     public void broadcastRooms() {
-        try {
-            for (User client : clients) {
-                client.getOout().writeObject(new Message("Server", Mode.ROOM_TRANSMIT,
-                        rooms.keySet().toString()));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        for (User client : clients) {
+            sendMessage(client, new Message("Server", Mode.ROOM_TRANSMIT,
+                    rooms.keySet().toString()));
         }
     }
 
@@ -232,27 +224,31 @@ public class Server {
         }
     }
 
+    // adds a new private room to rooms
     public void addPrivateRoom(String name){
         if (!privateRooms.containsKey(name)) {
             privateRooms.put(name, new ArrayList<User>());
         }
     }
 
+    // todo nutzer des raums verwalten
+    // changes room name
     public void changeRoomName(String room, String newName, ListView list){
         if(!this.selectedRoom.isEmpty()){
-            rooms.put( newName, rooms.remove( room ));
+            rooms.put(newName, rooms.remove(room));
             broadcastRooms();
             this.selectedRoom = "";
             populateList(rooms.keySet().toArray(new String[0]), list);
         }
     }
 
+    // deletes a room
     public void deleteRoom(String name){
         try{
             if(rooms.keySet().contains(name)){
-                for(User u : rooms.get(name)){
-                    rooms.get("Lobby").add(u);
-                    u.getOout().writeObject(new Message("Server", Mode.UPDATE_ROOM, "Lobby", "Lobby"));
+                for(User client : rooms.get(name)){
+                    rooms.get("Lobby").add(client);
+                    sendMessage(client, new Message("Server", Mode.UPDATE_ROOM, "Lobby"));
                 }
                 rooms.remove(name);
                 broadcastRooms();
@@ -264,24 +260,24 @@ public class Server {
         }
     }
 
-    public void updateRoom(Message message){
-        try {
-            for(User u : rooms.get(message.getRoom())){
-                u.getOout().writeObject(new Message("Server", Mode.UPDATE_ROOM, message.getRoom(), "Lobby"));
-            }
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-    }
+//    todo löschen wenn nicht benötigt
+//    // sends a message
+//    public void updateRoom(String newRoom){
+//            for(User client : rooms.get(newRoom)){
+//                sendMessage(client, new Message("Server", Mode.UPDATE_ROOM, newRoom));
+//            }
+//    }
 
-    // adds User client to the entered room and removes it from the old room
+    // adds client to the entered room and removes it from the old room
     public void addToRoom(Message message) {
         User client = getClientFromClientsByName(message.getClient());
-        rooms.get(message.getRoom()).add(client);       // adds client to new room
-        rooms.get(message.getText()).remove(client);    // remove client from old room
-        broadcastRoomUsers(message.getRoom());  //broadcast to new room
-        broadcastRoomUsers(message.getText()); //broadcast to old room
+        String oldRoom = message.getRoom();
+        String newRoom = message.getText();
+        rooms.get(oldRoom).remove(client);
+        rooms.get(newRoom).add(client);
+        broadcastRoomUsers(newRoom);
+        broadcastRoomUsers(oldRoom);
+        sendMessage(client, new Message("Server", Mode.UPDATE_ROOM, newRoom));
     }
 
     // returns all room names as a String array
@@ -347,7 +343,7 @@ public class Server {
         sendMessage(client, new Message("Server", Mode.DISCONNECT, "Sie wurden vom Server ausgschlossen!\n" +
                 "Die Anwendung schließt sich in 20 Sekunden!\n"));
         removeUser(client);
-        broadcastToRoom(new Message("Server", Mode.MESSAGE, name + " hat den Chat verlassen.", room));
+        broadcastToRoom(new Message("Server", Mode.MESSAGE, room, name + " hat den Chat verlassen."));
         broadcastRoomUsers(room);
     }
 
@@ -360,7 +356,7 @@ public class Server {
         service.updateBanned(name, true);
         sendMessage(client, new Message("Server", Mode.DISCONNECT, "Ihr Benutzerkonto wurde gesperrt!\n" +
                 "Die Anwendung schließt sich in 20 Sekunden!\n"));
-        broadcastToRoom(new Message("Server", Mode.MESSAGE, name + " hat den Chat verlassen.", room));
+        broadcastToRoom(new Message("Server", Mode.MESSAGE, room, name + " hat den Chat verlassen."));
         broadcastRoomUsers(room);
     }
 
@@ -377,7 +373,7 @@ public class Server {
     public void setSelectedRoom(String selectedRoom) { this.selectedRoom = selectedRoom;
         System.out.println(selectedRoom);}
 
-
+    // populates the given ListView with the list items
     public void populateList(String[] list, ListView object) {
         Platform.runLater(new Runnable() {
             @Override

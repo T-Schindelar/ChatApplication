@@ -27,6 +27,15 @@ class ReceivedMessagesHandler implements Runnable {
         this.client = client;
     }
 
+    public ReceivedMessagesHandler(ObjectInputStream oin, TextArea txtAreaChat, Client client) {
+        this.oin = oin;
+        this.txtAreaChat = txtAreaChat;
+        this.client = client;
+        this.txtFieldState = null;
+        this.listRooms = null;
+        this.listUser = null;
+    }
+
     public void run() {
         while (true) {
             try {
@@ -37,6 +46,7 @@ class ReceivedMessagesHandler implements Runnable {
                     switch (message.getMode()) {
                         // server info messages
                         case MESSAGE:
+                        case MESSAGE_PRIVATE:
                             addMessageToTxtAreaChat(message);
                             break;
                         case USER_TRANSMIT:
@@ -54,7 +64,6 @@ class ReceivedMessagesHandler implements Runnable {
                             client.disconnect();
                             break;
                         case UPDATE_ROOM:
-                            System.out.println("UPDATE");       //todo
                             this.client.setActiveRoom(message.getText());
                             txtFieldState.setText(String.format("Verbunden mit %s:%d als %s in Raum %s", client.getHost(), client.getPort(),
                                     client.getName(), client.getActiveRoom()));
@@ -82,6 +91,9 @@ class ReceivedMessagesHandler implements Runnable {
 
     // todo liste sortiert ausgeben
     public void populateList(String[] list, ListView object) {
+        if (object == null) {
+            return;
+        }
         Platform.runLater(new Runnable() {
             @Override
             public void run() {

@@ -11,12 +11,13 @@ public enum Mode {
     LOGIN,
     LOGOUT,
     MESSAGE,
+    MESSAGE_PRIVATE,
     REGISTRATION,
-    ROOM_CREATE,            //für Server
-    ROOM_CREATE_PRIVATE,    //für Server
-    ROOM_JOIN,              //für Server
-    USER_TRANSMIT,          //für Client
-    ROOM_TRANSMIT,          //für Client
-    UPDATE_ROOM
+    ROOM_CREATE,            // for server
+    ROOM_CREATE_PRIVATE,    // for server
+    ROOM_JOIN,              // for server
+    USER_TRANSMIT,          // for client
+    ROOM_TRANSMIT,          // for client
+    UPDATE_ROOM             // for client
 }
 

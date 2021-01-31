@@ -46,17 +46,22 @@ public class Client {
     }
 
     // handles login process
-    public Message login(Mode mode, String name, String password) throws IOException, ClassNotFoundException {
+    public Message login(Mode mode, String name, String password) {
         if (name.isEmpty() || password.isEmpty()) {
-            return new Message("Server", Mode.ERROR, "Bitte Namen und Passwort eingeben!", "");
+            return new Message("Server", Mode.ERROR, "", "Bitte Namen und Passwort eingeben!");
         }
-        oout.writeObject(mode);
-        oout.flush();
-        oout.writeObject(new Account(name.strip(), password));
-        oout.flush();
+        try {
+            oout.writeObject(mode);
+            oout.flush();
+            oout.writeObject(new Account(name.strip(), password));
+            oout.flush();
 
-        Message message = (Message) oin.readObject();
-        return message;
+            Message message = (Message) oin.readObject();
+            return message;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     // returns an new thread for the ReceivedMessagesHandler
@@ -64,6 +69,10 @@ public class Client {
                                                       ListView listRooms, ListView listUser) {
         this.thread = new Thread(new ReceivedMessagesHandler(oin, txtAreaChat, txtFieldState, listRooms,
                 listUser, this));
+        return this.thread;
+    }
+    public Thread createThreadReceivedMessagesHandler(TextArea txtAreaChat) {
+        this.thread = new Thread(new ReceivedMessagesHandler(oin, txtAreaChat, this));
         return this.thread;
     }
 

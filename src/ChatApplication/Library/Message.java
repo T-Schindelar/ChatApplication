@@ -6,16 +6,16 @@ import java.util.Date;
 public class Message implements java.io.Serializable {
     private final String timestamp;
     private final String client;
-    private final Mode mode;
+    private Mode mode;
     private final String text;
     private final String room;
 
-    public Message(String client, Mode mode, String text, String room) {
+    public Message(String client, Mode mode, String room, String text) {
         this.timestamp = new SimpleDateFormat("HH:mm").format(new Date());
         this.client = client;
         this.mode = mode;
-        this.text = text;
         this.room = room;
+        this.text = text;
     }
 
     public Message(String client, Mode mode, String text) {
@@ -39,6 +39,9 @@ public class Message implements java.io.Serializable {
     public String getRoom() {
         return room;
     }
+
+    // setter
+    public void setMode(Mode mode) { this.mode = mode; }
 
     @Override
     public String toString() {

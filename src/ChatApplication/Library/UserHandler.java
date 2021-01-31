@@ -1,6 +1,5 @@
 package ChatApplication.Library;
 
-import javafx.application.Platform;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -34,18 +33,21 @@ public class UserHandler implements Runnable {
             try {
                 // gets client messages
                 Message message = (Message) user.getOin().readObject();
-                System.out.println(message + " " + message.getRoom());
+                System.out.println(message + " " + message.getRoom());      // todo
 
                 // checks message mode
                 switch (message.getMode()) {
                     case MESSAGE:
                         server.broadcastToRoom(message);
                         addMessageToTxtAreaServerlog(new Message(message.getClient(), message.getMode(),
-                                "{" + message.getRoom() + "} " + message.getText(), ""));
+                                "{" + message.getRoom() + "} " + message.getText()));
+                        break;
+                    case MESSAGE_PRIVATE:
+                        server.broadcastToPrivateRoom(message);
                         break;
                     case INFORMATION_REQUEST:
-                        server.populateList(server.getClientNames(), listUser); //geändert
-                        server.populateList(server.getRoomNames(), listRooms);  //geändert
+                        server.populateList(server.getClientNames(), listUser); // geändert
+                        server.populateList(server.getRoomNames(), listRooms);  // geändert
                         server.broadcastToRoom(new Message("Server", Mode.MESSAGE, user +
                                 " ist dem Chat beigetreten."));
                         addMessageToTxtAreaServerlog(new Message("Server", Mode.MESSAGE,
@@ -66,37 +68,35 @@ public class UserHandler implements Runnable {
                         String newName = message.getText();
                         server.changeAccountName(oldName, newName);
                         server.populateList(server.getClientNames(), listUser); //geändert
-                        server.broadcastToRoom(new Message("Server", Mode.MESSAGE, oldName +
-                                " hat den Namen zu " + newName + " geändert.", message.getRoom()));
+                        server.broadcastToRoom(new Message("Server", Mode.MESSAGE, message.getRoom(),
+                                oldName + " hat den Namen zu " + newName + " geändert."));
                         server.broadcastRoomUsers(message.getRoom());
                         break;
                     case CHANGE_PASSWORD:
                         server.changeAccountPassword(user.getName(), message.getText());
-                        server.sendMessage(user, new Message("Server", Mode.MESSAGE, "Änderung erfolgreich.",
-                                message.getRoom()));
+                        server.sendMessage(user, new Message("Server", Mode.MESSAGE, message.getRoom(),
+                                "Änderung erfolgreich."
+                        ));
                         break;
                     case DELETE_ACCOUNT:
                         server.deleteAccount(user.getName());
                         server.populateList(server.getClientNames(), listUser); //geändert
                         break;
                     case ROOM_CREATE:
-                        Message m = new Message(message.getClient(), Mode.ROOM_JOIN, message.getRoom(), message.getText());
-                        if(!server.getRoomsKeySet().contains(m.getRoom())){
-                            server.addRoom(message.getText());
-                            server.addToRoom(m);
-                            server.updateRoom(m);
-                            listRooms.getItems().add(m.getRoom());
-                            addMessageToTxtAreaServerlog(new Message(m.getClient(), Mode.MESSAGE, String.format("%s hat Raum %s erstellt", m.getClient(), m.getRoom())));
+                        String newRoom = message.getText();
+                        if(!server.getRoomsKeySet().contains(newRoom)){
+                            server.addRoom(newRoom);
+                            server.addToRoom(message);
+//                            server.updateRoom(newRoom);       // todo nicht mehr benötigt, geschieht in addToRoom
+                            listRooms.getItems().add(newRoom);
+                            addMessageToTxtAreaServerlog(new Message(message.getClient(), Mode.MESSAGE,
+                                    String.format("%s hat Raum %s erstellt", message.getClient(), newRoom)));
                         }
                         break;
-                    case ROOM_CREATE_PRIVATE:       //todo weitermachen
-                        Message m1 = new Message(message.getClient(), Mode.ROOM_JOIN, message.getRoom(), message.getText());
-                        if(!server.getPrivateRoomsKeySet().contains(m1.getRoom())){
-                            server.addPrivateRoom(message.getText());
-                            server.addToRoom(m1);
-                            server.updateRoom(m1);
-                            listRooms.getItems().add(m1.getRoom());
-                            addMessageToTxtAreaServerlog(new Message(m1.getClient(), Mode.MESSAGE, String.format("%s hat Raum %s erstellt", m1.getClient(), m1.getRoom())));
+                    case ROOM_CREATE_PRIVATE:       //todo weitermachen, clients zum raum
+                        String newPrivateRoom = message.getText();
+                        if(!server.getRoomsKeySet().contains(newPrivateRoom)){
+                            server.addPrivateRoom(newPrivateRoom);
                         }
                         break;
                     case ROOM_JOIN:
@@ -110,8 +110,8 @@ public class UserHandler implements Runnable {
                 String room = server.getRoomNameForUser(user);
                 server.removeUser(user);
                 server.populateList(server.getClientNames(), listUser); //geändert
-                server.broadcastToRoom(new Message("Server", Mode.MESSAGE, user +
-                        " hat den Chat verlassen.", room));
+                server.broadcastToRoom(new Message("Server", Mode.MESSAGE, room, user +
+                        " hat den Chat verlassen."));
                 server.broadcastRoomUsers(room);
                 e.printStackTrace();
                 return;
@@ -123,8 +123,8 @@ public class UserHandler implements Runnable {
                 String room = server.getRoomNameForUser(user);
                 server.removeUser(user);
                 server.populateList(server.getClientNames(), listUser); //geändert
-                server.broadcastToRoom(new Message("Server", Mode.MESSAGE, user +
-                        " hat den Chat verlassen.", room));
+                server.broadcastToRoom(new Message("Server", Mode.MESSAGE, room, user +
+                        " hat den Chat verlassen."));
                 server.broadcastRoomUsers(room);
                 e.printStackTrace();
                 return;
