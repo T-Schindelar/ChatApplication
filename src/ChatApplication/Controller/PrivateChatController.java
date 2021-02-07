@@ -1,5 +1,6 @@
 package ChatApplication.Controller;
 
+import ChatApplication.Library.Account;
 import ChatApplication.Library.Client;
 import ChatApplication.Library.Message;
 import ChatApplication.Library.Mode;
@@ -10,6 +11,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -18,21 +20,35 @@ public class PrivateChatController implements Initializable {
     public TextField txtFieldMessage;
     public Button btnSendMessage;
 
-    private final Client client;
-    private final String otherClient;
+    private Client client;
+    private String otherClient;
 
-    public PrivateChatController(Client client, String otherClient) {
-        this.client = client;
-        this.otherClient = otherClient;
+    public PrivateChatController(String clientName, String otherClient) {
+        try {
+            this.otherClient = otherClient;
+            this.client = new Client(5000);
+            client.setName(clientName);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void initialize(URL location, ResourceBundle resource) {
-        client.createThreadReceivedMessagesHandler(txtAreaChat).start();
-        // gets information about other clients and available rooms
-        txtFieldMessage.setOnKeyPressed(keyEvent -> {
-            if (keyEvent.getCode() == KeyCode.ENTER)
-                sendMessage();
-        });
+        try {
+            client.sendObject(Mode.ROOM_CREATE_PRIVATE);
+            client.sendObject(new Account(client.getName(), ""));
+            client.createThreadReceivedMessagesHandler(txtAreaChat).start();
+            client.sendObject(new Message(client.getName(), Mode.ROOM_CREATE_PRIVATE, otherClient, ""));
+            // gets information about other clients and available rooms
+            txtFieldMessage.setOnKeyPressed(keyEvent -> {
+                if (keyEvent.getCode() == KeyCode.ENTER)
+                    sendMessage();
+            });
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void btnSendMessage(ActionEvent actionEvent) {

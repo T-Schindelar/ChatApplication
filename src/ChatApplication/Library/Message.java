@@ -44,7 +44,5 @@ public class Message implements java.io.Serializable {
     public void setMode(Mode mode) { this.mode = mode; }
 
     @Override
-    public String toString() {
-        return "[" + timestamp + "] " + client + ": " + text;
-    }
+    public String toString() { return "[" + timestamp + "] " + client + ": " + text; }
 }

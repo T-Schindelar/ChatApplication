@@ -150,7 +150,7 @@ public class ChatController implements Initializable {
         try {
             Stage stage = new Stage();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../Resource/privateChat.fxml"));
-            loader.setController(new PrivateChatController(client, name));
+            loader.setController(new PrivateChatController(client.getName(), name));
             stage.setTitle("Privater Chat mit " + name);
             stage.setScene(new Scene(loader.load()));
             stage.show();

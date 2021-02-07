@@ -7,15 +7,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Server {
     private final int port;
     private final ServerSocket server;
     private final List<User> clients;
+    private final List<User> privateClients;
     private List<Account> accounts;
     private final AccountDbService service;
     private final HashMap<String, ArrayList<User>> rooms;
@@ -26,6 +24,7 @@ public class Server {
         this.port = port;
         this.server = new ServerSocket(port);
         this.clients = new ArrayList<User>();
+        this.privateClients = new ArrayList<User>();
         this.service = new AccountDbService();
         this.accounts = service.getAllAccounts();
         this.rooms = new HashMap<String, ArrayList<User>>();
@@ -51,6 +50,7 @@ public class Server {
             while (true) {
                 Mode mode = (Mode) client.getOin().readObject();
                 Account loginAccount = (Account) client.getOin().readObject();
+                System.out.println(mode + " : " + loginAccount);        //todo
                 // registration
                 boolean registrationSuccessful = true;
                 switch (mode) {
@@ -70,6 +70,7 @@ public class Server {
                             sendMessage(client, new Message("Server", Mode.MESSAGE, ""));
                             return;
                         }
+                        break;
                     case LOGIN:
                         Account account = service.get(loginAccount.getName());
                         if (account == null) {
@@ -87,6 +88,12 @@ public class Server {
                             sendMessage(client, new Message("Server", Mode.ERROR,
                                     "Fehler! Bitte versuchen Sie es erneut."));
                         }
+                        break;
+                    default:
+                        client.setName(loginAccount.getName());
+                        privateClients.add(client);
+                        System.out.println("default");  //todo
+                        return;
                 }
             }
         } catch (Exception e) {
@@ -183,12 +190,23 @@ public class Server {
     // sends message to all room clients
     public void broadcastToPrivateRoom(Message message) {
         System.out.println(message);    // todo
-        ArrayList<User> users = privateRooms.get(message.getRoom());
+        System.out.println(message.getClient() + " " + message.getRoom());  //todo
+        ArrayList<User> users = getPrivateRoom(message.getClient(), message.getRoom());
+        System.out.println(privateRooms);
         System.out.println("users: "+ users);      // todo
         for (User client : users) {
             System.out.println(client);      // todo
             sendMessage(client, message);
         }
+    }
+
+    private ArrayList<User> getPrivateRoom(String name, String otherName){
+        for(String key : privateRooms.keySet()){
+            if(key.equals(name + otherName) || key.equals(otherName + name)){
+                return privateRooms.get(key);
+            }
+        }
+        return null;
     }
 
     // send list of clients to all clients
@@ -225,9 +243,20 @@ public class Server {
     }
 
     // adds a new private room to rooms
-    public void addPrivateRoom(String name){
-        if (!privateRooms.containsKey(name)) {
-            privateRooms.put(name, new ArrayList<User>());
+    public void addPrivateRoom(Message message){
+        String key = message.getRoom() + message.getClient();
+        String key2 = message.getClient() + message.getRoom();
+        if(isInPrivateRoom(message.getClient(), key) || isInPrivateRoom(message.getClient(), key2)){
+            return;
+        }
+        User client = getPrivateClientFromPrivateClientsByName(message.getClient());
+        if (!(privateRooms.containsKey(key) || privateRooms.containsKey(key2))) {
+            ArrayList room = new ArrayList<User>();
+            room.add(getPrivateClientFromPrivateClientsByName(message.getClient()));
+            privateRooms.put(key, room);
+        }
+        else{
+            privateRooms.get(key2).add(client);
         }
     }
 
@@ -296,10 +325,39 @@ public class Server {
         return null;
     }
 
+    public String getPrivateRoomNameForUser(User client) {
+        for (String key : privateRooms.keySet()) {
+            if (rooms.get(key).contains(client)) {
+                return key;
+            }
+        }
+        return null;
+    }
+
+    public boolean isInPrivateRoom(String name, String roomName) {
+        if(privateRooms.get(roomName) == null){
+            return false;
+        }
+        for (User client : privateRooms.get(roomName)) {
+                if (client.getName().equalsIgnoreCase(name)) {
+                    return true;
+                }
+            }
+        return false;
+    }
+
     // removes a client from a room
     public void removeFromRoom(String roomName, User client) {
+        System.out.println(roomName + " remove");   //todo
         rooms.get(roomName).remove(client);
     }
+
+    public void removeFromPrivateRoom(String roomName, User client) {
+        System.out.println(roomName + " remove private");
+        privateRooms.get(roomName).remove(client);
+    }
+
+
 
 
     // ------------------------- USER/CLIENT MANAGEMENT  -------------------------
@@ -311,8 +369,14 @@ public class Server {
 
     // removes a client from the clients list
     public void removeUser(User client) {
-        clients.remove(client);
-        removeFromRoom(getRoomNameForUser(client), client);
+        if(clients.contains(client)){
+            clients.remove(client);
+            removeFromRoom(getRoomNameForUser(client), client);
+        }
+        else{
+            privateClients.remove(client);
+            removeFromPrivateRoom(getPrivateRoomNameForUser(client), client);
+        }
     }
 
     // returns a client from the clients list by name
@@ -320,6 +384,15 @@ public class Server {
         for (User client : clients) {
             if (client.getName().equals(name))
                 return client;
+        }
+        return null;
+    }
+
+    public User getPrivateClientFromPrivateClientsByName(String name) {
+        for(int i = privateClients.size() - 1; i >= 0; i--) {
+            if (privateClients.get(i).getName().equals(name)) {
+                return privateClients.get(i);
+            }
         }
         return null;
     }

@@ -44,6 +44,7 @@ public class UserHandler implements Runnable {
                         break;
                     case MESSAGE_PRIVATE:
                         server.broadcastToPrivateRoom(message);
+                        System.out.println(message + " message_private");
                         break;
                     case INFORMATION_REQUEST:
                         server.populateList(server.getClientNames(), listUser); // geändert
@@ -94,10 +95,9 @@ public class UserHandler implements Runnable {
                         }
                         break;
                     case ROOM_CREATE_PRIVATE:       //todo weitermachen, clients zum raum
-                        String newPrivateRoom = message.getText();
-                        if(!server.getRoomsKeySet().contains(newPrivateRoom)){
-                            server.addPrivateRoom(newPrivateRoom);
-                        }
+                        System.out.println(message + " roomcreateprivate");   //todo
+
+                        server.addPrivateRoom(message);
                         break;
                     case ROOM_JOIN:
                         server.addToRoom(message);
