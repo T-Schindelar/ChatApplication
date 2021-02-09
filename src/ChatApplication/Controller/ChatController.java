@@ -142,16 +142,16 @@ public class ChatController implements Initializable {
         client.sendObject(new Message(client.getName(), Mode.ROOM_CREATE, client.getActiveRoom(), roomName));
     }
 
-    public void createPrivateRoom(String name){
-        newWindow(name);
+    public void createPrivateRoom(String otherClient){
+        newWindow(otherClient);
     }
 
-    private void newWindow(String name){
+    private void newWindow(String otherClient){
         try {
             Stage stage = new Stage();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../Resource/privateChat.fxml"));
-            loader.setController(new PrivateChatController(client.getName(), name));
-            stage.setTitle("Privater Chat mit " + name);
+            loader.setController(new PrivateChatController(client.getName(), otherClient));
+            stage.setTitle("Privater Chat mit " + otherClient);
             stage.setScene(new Scene(loader.load()));
             stage.show();
         } catch (IOException e) {

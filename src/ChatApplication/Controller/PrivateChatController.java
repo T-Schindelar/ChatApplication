@@ -11,7 +11,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -36,11 +35,12 @@ public class PrivateChatController implements Initializable {
 
     public void initialize(URL location, ResourceBundle resource) {
         try {
+            // passing the account and and management
             client.sendObject(Mode.ROOM_CREATE_PRIVATE);
             client.sendObject(new Account(client.getName(), ""));
+
             client.createThreadReceivedMessagesHandler(txtAreaChat).start();
             client.sendObject(new Message(client.getName(), Mode.ROOM_CREATE_PRIVATE, otherClient, ""));
-            // gets information about other clients and available rooms
             txtFieldMessage.setOnKeyPressed(keyEvent -> {
                 if (keyEvent.getCode() == KeyCode.ENTER)
                     sendMessage();

@@ -43,7 +43,7 @@ public class Server {
     }
 
 
-    // ------------------------- ACCOUNT MANAGEMENT  -------------------------
+    // ------------------------- ACCOUNT MANAGEMENT -------------------------
     // handles login and registration process
     public void accountAndEntryManagement(User client) {
         try {
@@ -160,7 +160,7 @@ public class Server {
     }
 
 
-    // ------------------------- SEND MESSAGES  -------------------------
+    // ------------------------- SEND MESSAGES -------------------------
     // send message to a specific client
     public void sendMessage(User client, Message message) {
         try {
@@ -180,33 +180,18 @@ public class Server {
 
     // sends message to all room clients
     public void broadcastToRoom(Message message) {
-        ArrayList<User> users = rooms.get(message.getRoom());
-        for (User client : users) {
+        ArrayList<User> clients = rooms.get(message.getRoom());
+        for (User client : clients) {
             sendMessage(client, message);
         }
     }
 
-    // todo weitermachen, nachrichten nur an private fenster
     // sends message to all room clients
     public void broadcastToPrivateRoom(Message message) {
-        System.out.println(message);    // todo
-        System.out.println(message.getClient() + " " + message.getRoom());  //todo
-        ArrayList<User> users = getPrivateRoom(message.getClient(), message.getRoom());
-        System.out.println(privateRooms);
-        System.out.println("users: "+ users);      // todo
-        for (User client : users) {
-            System.out.println(client);      // todo
+        ArrayList<User> clients = getPrivateRoomClients(message.getClient(), message.getRoom());
+        for (User client : clients) {
             sendMessage(client, message);
         }
-    }
-
-    private ArrayList<User> getPrivateRoom(String name, String otherName){
-        for(String key : privateRooms.keySet()){
-            if(key.equals(name + otherName) || key.equals(otherName + name)){
-                return privateRooms.get(key);
-            }
-        }
-        return null;
     }
 
     // send list of clients to all clients
@@ -233,7 +218,7 @@ public class Server {
     }
 
 
-    // ------------------------- ROOM MANAGEMENT  -------------------------
+    // ------------------------- ROOM MANAGEMENT -------------------------
     // adds a new room to rooms
     public void addRoom(String name) {
         if (!rooms.containsKey(name)) {
@@ -242,21 +227,29 @@ public class Server {
         }
     }
 
-    // adds a new private room to rooms
+
+    // adds a new private room to rooms, if not already exits
     public void addPrivateRoom(Message message){
         String key = message.getRoom() + message.getClient();
-        String key2 = message.getClient() + message.getRoom();
-        if(isInPrivateRoom(message.getClient(), key) || isInPrivateRoom(message.getClient(), key2)){
+        String keyReverse = message.getClient() + message.getRoom();
+        if (!(privateRooms.containsKey(key) || privateRooms.containsKey(keyReverse))) {
+            privateRooms.put(key, new ArrayList<User>());
+        }
+    }
+
+    // adds a new clients to a private room
+    public void addClientToPrivateRoom(Message message){
+        String key = message.getRoom() + message.getClient();
+        String keyReverse = message.getClient() + message.getRoom();
+        if(isInPrivateRoom(message.getClient(), key) || isInPrivateRoom(message.getClient(), keyReverse)){
             return;
         }
         User client = getPrivateClientFromPrivateClientsByName(message.getClient());
-        if (!(privateRooms.containsKey(key) || privateRooms.containsKey(key2))) {
-            ArrayList room = new ArrayList<User>();
-            room.add(getPrivateClientFromPrivateClientsByName(message.getClient()));
-            privateRooms.put(key, room);
+        if (privateRooms.containsKey(key)) {
+            privateRooms.get(key).add(client);
         }
         else{
-            privateRooms.get(key2).add(client);
+            privateRooms.get(keyReverse).add(client);
         }
     }
 
@@ -325,21 +318,33 @@ public class Server {
         return null;
     }
 
-    public String getPrivateRoomNameForUser(User client) {
+    // returns all clients from a private room
+    private ArrayList<User> getPrivateRoomClients(String name, String otherName){
+        for(String key : privateRooms.keySet()){
+            if(key.equals(name + otherName) || key.equals(otherName + name)){
+                return privateRooms.get(key);
+            }
+        }
+        return null;
+    }
+
+    // returns the private room for a client
+    public String getPrivateRoomNameForClient(User client) {
         for (String key : privateRooms.keySet()) {
-            if (rooms.get(key).contains(client)) {
+            if (privateRooms.get(key).contains(client)) {
                 return key;
             }
         }
         return null;
     }
 
-    public boolean isInPrivateRoom(String name, String roomName) {
+    // checks if the client is already in the private room
+    public boolean isInPrivateRoom(String clientName, String roomName) {
         if(privateRooms.get(roomName) == null){
             return false;
         }
         for (User client : privateRooms.get(roomName)) {
-                if (client.getName().equalsIgnoreCase(name)) {
+                if (client.getName().equalsIgnoreCase(clientName)) {
                     return true;
                 }
             }
@@ -348,19 +353,18 @@ public class Server {
 
     // removes a client from a room
     public void removeFromRoom(String roomName, User client) {
-        System.out.println(roomName + " remove");   //todo
         rooms.get(roomName).remove(client);
     }
 
+    // removes a client from a private room
     public void removeFromPrivateRoom(String roomName, User client) {
-        System.out.println(roomName + " remove private");
         privateRooms.get(roomName).remove(client);
     }
 
 
 
 
-    // ------------------------- USER/CLIENT MANAGEMENT  -------------------------
+    // ------------------------- USER/CLIENT MANAGEMENT -------------------------
     // adds a client to the clients list
     public void addUser(User client) {
         clients.add(client);
@@ -375,7 +379,7 @@ public class Server {
         }
         else{
             privateClients.remove(client);
-            removeFromPrivateRoom(getPrivateRoomNameForUser(client), client);
+            removeFromPrivateRoom(getPrivateRoomNameForClient(client), client);
         }
     }
 
@@ -388,6 +392,7 @@ public class Server {
         return null;
     }
 
+    // returns the last added private client with the given name
     public User getPrivateClientFromPrivateClientsByName(String name) {
         for(int i = privateClients.size() - 1; i >= 0; i--) {
             if (privateClients.get(i).getName().equals(name)) {
@@ -438,13 +443,20 @@ public class Server {
     public int getPort() {
         return port;
     }
-    public String getSelectedRoom() { return this.selectedRoom; }
-    public Set<String> getRoomsKeySet() { return rooms.keySet(); }
-    public Set<String> getPrivateRoomsKeySet() { return rooms.keySet(); }
+    public String getSelectedRoom() {
+        return selectedRoom;
+    }
+    public Set<String> getRoomsKeySet() {
+        return rooms.keySet();
+    }
+    public Set<String> getPrivateRoomsKeySet() {
+        return rooms.keySet();
+    }
 
     // setter
-    public void setSelectedRoom(String selectedRoom) { this.selectedRoom = selectedRoom;
-        System.out.println(selectedRoom);}
+    public void setSelectedRoom(String selectedRoom) {
+        this.selectedRoom = selectedRoom;
+    }
 
     // populates the given ListView with the list items
     public void populateList(String[] list, ListView object) {
@@ -457,6 +469,5 @@ public class Server {
                 }
             }
         });
-
     }
 }
