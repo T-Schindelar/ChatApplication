@@ -362,8 +362,6 @@ public class Server {
     }
 
 
-
-
     // ------------------------- USER/CLIENT MANAGEMENT -------------------------
     // adds a client to the clients list
     public void addUser(User client) {
@@ -438,6 +436,7 @@ public class Server {
         broadcastRoomUsers(room);
     }
 
+
     // ------------------------- GETTER & SETTER -------------------------
     //getter
     public int getPort() {
@@ -458,6 +457,8 @@ public class Server {
         this.selectedRoom = selectedRoom;
     }
 
+
+    // ------------------------- other methods -------------------------
     // populates the given ListView with the list items
     public void populateList(String[] list, ListView object) {
         Platform.runLater(new Runnable() {

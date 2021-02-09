@@ -104,26 +104,14 @@ public class UserHandler implements Runnable {
                         break;
                 }
             } catch (Exception e) {
-                addMessageToTxtAreaServerlog(new Message(user.getName(), Mode.MESSAGE, "hat den Chat verlassen."));
-                String room = server.getRoomNameForUser(user);
-                server.removeUser(user);
-                server.populateList(server.getClientNames(), listUser); //geändert
-                server.broadcastToRoom(new Message("Server", Mode.MESSAGE, room, user +
-                        " hat den Chat verlassen."));
-                server.broadcastRoomUsers(room);
+                disconnectRoutine();
                 e.printStackTrace();
                 return;
             }
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
-                addMessageToTxtAreaServerlog(new Message(user.getName(), Mode.MESSAGE, "hat den Chat verlassen."));
-                String room = server.getRoomNameForUser(user);
-                server.removeUser(user);
-                server.populateList(server.getClientNames(), listUser); //geändert
-                server.broadcastToRoom(new Message("Server", Mode.MESSAGE, room, user +
-                        " hat den Chat verlassen."));
-                server.broadcastRoomUsers(room);
+                disconnectRoutine();
                 e.printStackTrace();
                 return;
             }
@@ -135,18 +123,13 @@ public class UserHandler implements Runnable {
         txtAreaServerlog.setText(txtAreaServerlog.getText() + message + "\n");
     }
 
-    // todo liste sortiert ausgeben
-//    public void populateList(String[] list, ListView object) {
-//        Platform.runLater(new Runnable() {
-//            @Override
-//            public void run() {
-//                object.getItems().clear();
-//                for (String item : list) {
-//                    object.getItems().add(item.strip());
-//                }
-//            }
-//        });
-//
-//    }
-
-}
+    public void disconnectRoutine() {
+        addMessageToTxtAreaServerlog(new Message(user.getName(), Mode.MESSAGE, "hat den Chat verlassen."));
+        String room = server.getRoomNameForUser(user);
+        server.removeUser(user);
+        server.populateList(server.getClientNames(), listUser); //geändert
+        server.broadcastToRoom(new Message("Server", Mode.MESSAGE, room, user +
+                " hat den Chat verlassen."));
+        server.broadcastRoomUsers(room);
+    }
+    }
