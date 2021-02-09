@@ -72,12 +72,18 @@ public class LoginController implements Initializable {
 
             // setup new window
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../Resource/chatWindow.fxml"));
-            loader.setController(new ChatController(client));
+            ChatController controller = new ChatController(client);
+            loader.setController(controller);
 
             // show new window
+            currentWindow.setOnCloseRequest(e -> {
+                System.out.println("normaler chat geschlossen");    //todo
+                controller.logoutRequest();
+                currentWindow.close();
+            });
             currentWindow.setTitle("ChatApp");
-            currentWindow.show();
             currentWindow.setScene(new Scene(loader.load()));
+            currentWindow.show();
         } catch (IOException e) {
             e.printStackTrace();
         }

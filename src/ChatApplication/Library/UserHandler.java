@@ -55,14 +55,9 @@ public class UserHandler implements Runnable {
                         server.broadcastRoomUsers("Lobby");
                         server.broadcastRooms();
                         break;
-                    // todo
-//                    case LOGOUT:
-//                        server.removeUser(user);
-//                        populateList(server.getClientNames(), listUser);
-//                        server.broadcastMessages(new Message("Server", Mode.MESSAGE, user +
-//                                " hat den Chat verlassen."));
-//                        server.broadcastAllUsers();
-//                        break;
+                    case LOGOUT:
+                        disconnectRoutine();
+                        return;
                     case CHANGE_NAME:
                         String oldName = user.getName();
                         String newName = message.getText();
@@ -87,7 +82,6 @@ public class UserHandler implements Runnable {
                         if(!server.getRoomsKeySet().contains(newRoom)){
                             server.addRoom(newRoom);
                             server.addToRoom(message);
-//                            server.updateRoom(newRoom);       // todo nicht mehr benötigt, geschieht in addToRoom
                             listRooms.getItems().add(newRoom);
                             addMessageToTxtAreaServerlog(new Message(message.getClient(), Mode.MESSAGE,
                                     String.format("%s hat Raum %s erstellt", message.getClient(), newRoom)));
@@ -124,12 +118,16 @@ public class UserHandler implements Runnable {
     }
 
     public void disconnectRoutine() {
-        addMessageToTxtAreaServerlog(new Message(user.getName(), Mode.MESSAGE, "hat den Chat verlassen."));
-        String room = server.getRoomNameForUser(user);
-        server.removeUser(user);
-        server.populateList(server.getClientNames(), listUser); //geändert
-        server.broadcastToRoom(new Message("Server", Mode.MESSAGE, room, user +
-                " hat den Chat verlassen."));
-        server.broadcastRoomUsers(room);
+        if (server.isPrivateClient(user)) {
+            server.removeUser(user);
+        } else {
+            addMessageToTxtAreaServerlog(new Message(user.getName(), Mode.MESSAGE, "hat den Chat verlassen."));
+            String room = server.getRoomNameForUser(user);
+            server.removeUser(user);
+            server.populateList(server.getClientNames(), listUser);
+            server.broadcastToRoom(new Message("Server", Mode.MESSAGE, room, user +
+                    " hat den Chat verlassen."));
+            server.broadcastRoomUsers(room);
+        }
     }
-    }
+}

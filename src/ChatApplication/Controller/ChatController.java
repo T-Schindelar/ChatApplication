@@ -137,6 +137,12 @@ public class ChatController implements Initializable {
         txtFieldMessage.clear();
     }
 
+    // sends a logout request to the server
+    public void logoutRequest() {
+        client.sendObject(new Message(client.getName(), Mode.LOGOUT, client.getActiveRoom(),
+                client.getName()+ "hat den Chat verlassen."));
+    }
+
     // todo
     public void createRoom(String roomName){
         client.sendObject(new Message(client.getName(), Mode.ROOM_CREATE, client.getActiveRoom(), roomName));
@@ -148,9 +154,15 @@ public class ChatController implements Initializable {
 
     private void newWindow(String otherClient){
         try {
+            PrivateChatController controller = new PrivateChatController(client.getName(), otherClient);
             Stage stage = new Stage();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../Resource/privateChat.fxml"));
-            loader.setController(new PrivateChatController(client.getName(), otherClient));
+            loader.setController(controller);
+            stage.setOnCloseRequest(e -> {
+                System.out.println("privater chat geschlossen");    //todo
+                controller.logoutRequest();
+                stage.close();
+            });
             stage.setTitle("Privater Chat mit " + otherClient);
             stage.setScene(new Scene(loader.load()));
             stage.show();
@@ -158,4 +170,5 @@ public class ChatController implements Initializable {
             e.printStackTrace();
         }
     }
+
 }

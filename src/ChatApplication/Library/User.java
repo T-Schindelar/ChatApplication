@@ -24,7 +24,7 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(name, user.name);
+        return client.equals(user.client) && name.equals(user.name) && oout.equals(user.oout) && oin.equals(user.oin);
     }
 
     @Override

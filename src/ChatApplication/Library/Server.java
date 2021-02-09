@@ -282,14 +282,6 @@ public class Server {
         }
     }
 
-//    todo löschen wenn nicht benötigt
-//    // sends a message
-//    public void updateRoom(String newRoom){
-//            for(User client : rooms.get(newRoom)){
-//                sendMessage(client, new Message("Server", Mode.UPDATE_ROOM, newRoom));
-//            }
-//    }
-
     // adds client to the entered room and removes it from the old room
     public void addToRoom(Message message) {
         User client = getClientFromClientsByName(message.getClient());
@@ -351,6 +343,11 @@ public class Server {
         return false;
     }
 
+    // checks if the client is a private client
+    public boolean isPrivateClient(User client) {
+        return privateClients.contains(client);
+    }
+
     // removes a client from a room
     public void removeFromRoom(String roomName, User client) {
         rooms.get(roomName).remove(client);
@@ -358,7 +355,11 @@ public class Server {
 
     // removes a client from a private room
     public void removeFromPrivateRoom(String roomName, User client) {
-        privateRooms.get(roomName).remove(client);
+        ArrayList<User> room = privateRooms.get(roomName);
+        room.remove(client);
+        if (room.isEmpty()) {
+            privateRooms.remove(roomName);
+        }
     }
 
 

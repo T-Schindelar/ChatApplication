@@ -60,4 +60,12 @@ public class PrivateChatController implements Initializable {
         client.sendObject(new Message(client.getName(), Mode.MESSAGE_PRIVATE, otherClient, txtFieldMessage.getText()));
         txtFieldMessage.clear();
     }
+
+    // sends a logout request to the server
+    public void logoutRequest() {
+        client.sendObject(new Message(client.getName(), Mode.LOGOUT, otherClient,
+                client.getName()+ "hat den Chat verlassen."));
+    }
+
+
 }
