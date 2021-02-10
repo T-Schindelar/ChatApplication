@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -25,6 +26,7 @@ public class ChatController implements Initializable {
 
 
     private final Client client;
+    private ArrayList<Stage> activeStages = new ArrayList<Stage>();
 
     public ChatController(Client client) {
         this.client = client;
@@ -105,7 +107,10 @@ public class ChatController implements Initializable {
         dialog.setContentText("Bitte Namen auswählen");
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()){
-            createPrivateRoom(result.get());
+            //System.out.println(activeStages);
+            if(!activeStage(result.get())){
+                createPrivateRoom(result.get());
+            }
         }
     }
 
@@ -162,13 +167,24 @@ public class ChatController implements Initializable {
                 System.out.println("privater chat geschlossen");    //todo
                 controller.logoutRequest();
                 stage.close();
+                activeStages.remove(stage);
             });
             stage.setTitle("Privater Chat mit " + otherClient);
             stage.setScene(new Scene(loader.load()));
+            activeStages.add(stage);
+
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    private boolean activeStage(String name){
+        for (Stage s : activeStages) {
+            if (s.getTitle().equals("Privater Chat mit " + name)){
+                return true;
+            }
+        }
+        return false;
+    }
 }
