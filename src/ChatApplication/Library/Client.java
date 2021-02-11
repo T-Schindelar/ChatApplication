@@ -111,7 +111,7 @@ public class Client {
     public String getActiveRoom() {
         return activeRoom;
     }
-    public String getSelectedUser(){
+    public String getSelectedUser() {
         return selectedUser;
     }
 
@@ -122,7 +122,7 @@ public class Client {
     public void setActiveRoom(String name) {
         this.activeRoom = name;
     }
-    public void setSelectedUser(String name){
+    public void setSelectedUser(String name) {
         this.selectedUser = name;
     }
 

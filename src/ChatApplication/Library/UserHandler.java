@@ -33,7 +33,6 @@ public class UserHandler implements Runnable {
             try {
                 // gets client messages
                 Message message = (Message) user.getOin().readObject();
-                //System.out.println(message + " " + message.getRoom());      // todo
 
                 // checks message mode
                 switch (message.getMode()) {
@@ -61,18 +60,11 @@ public class UserHandler implements Runnable {
                     case CHANGE_NAME:
                         String oldName = user.getName();
                         String newName = message.getText();
-                        if(!server.nameInUse(newName)){
-                            server.changeAccountName(oldName, newName);
-                            server.populateList(server.getClientNames(), listUser); //geändert
-                            Message m = new Message("Server", Mode.MESSAGE, message.getRoom(),
-                                    oldName + " hat den Namen zu " + newName + " geändert.");
-                            server.broadcastToRoom(m);
-                            server.broadcastRoomUsers(message.getRoom());
-                            addMessageToTxtAreaServerlog(m);
-                        }
-                        else{
-                            server.sendMessage(user, new Message("Server", Mode.CHANGE_NAME, message.getRoom(), oldName));
-                        }
+                        server.changeAccountName(oldName, newName);
+                        server.populateList(server.getClientNames(), listUser); //geändert
+                        server.broadcastToRoom(new Message("Server", Mode.MESSAGE, message.getRoom(),
+                                oldName + " hat den Namen zu " + newName + " geändert."));
+                        server.broadcastRoomUsers(message.getRoom());
                         break;
                     case CHANGE_PASSWORD:
                         server.changeAccountPassword(user.getName(), message.getText());

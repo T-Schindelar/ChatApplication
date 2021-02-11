@@ -3,10 +3,7 @@ package ChatApplication.Controller;
 import ChatApplication.Library.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
@@ -47,10 +44,13 @@ public class ServerController implements Initializable, Runnable {
     }
 
     public void menuItemWarnUser(ActionEvent actionEvent) {
-        TextInputDialog dialog = new TextInputDialog();
+        ChoiceDialog dialog = new ChoiceDialog();
         dialog.setTitle("Nutzer verwarnen");
         dialog.setHeaderText("");
-        dialog.setContentText("Bitte Nutzer eingeben");
+        for (Object item : listUser.getItems()) {
+            dialog.getItems().add(item);
+        }
+        dialog.setContentText("Bitte Nutzer auswählen");
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
             server.warnUser(result.get());
@@ -60,23 +60,30 @@ public class ServerController implements Initializable, Runnable {
     }
 
     public void menuItemTimeOutUser(ActionEvent actionEvent) {
-        TextInputDialog dialog = new TextInputDialog();
+        ChoiceDialog dialog = new ChoiceDialog();
         dialog.setTitle("Nutzer temporär ausschließen");
         dialog.setHeaderText("");
-        dialog.setContentText("Bitte Nutzer eingeben");
+        for (Object item : listUser.getItems()) {
+            dialog.getItems().add(item);
+        }
+        dialog.setContentText("Bitte Nutzer auswählen");
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
             server.disconnectUser(result.get());
+            server.populateList(server.getClientNames(), listUser);
             txtAreaServerlog.setText(txtAreaServerlog.getText() + new Message("Server", Mode.MESSAGE,
                     "Nutzer: " + result.get() + " wurde entfernt.") + "\n");
         }
     }
 
     public void menuItemBanUser(ActionEvent actionEvent) {
-        TextInputDialog dialog = new TextInputDialog();
+        ChoiceDialog dialog = new ChoiceDialog();
         dialog.setTitle("Nutzer permanent sperren");
         dialog.setHeaderText("");
-        dialog.setContentText("Bitte Nutzer eingeben");
+        for (Object item : listUser.getItems()) {
+            dialog.getItems().add(item);
+        }
+        dialog.setContentText("Bitte Nutzer auswählen");
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
             server.banAccount(result.get());
@@ -111,13 +118,18 @@ public class ServerController implements Initializable, Runnable {
     }
 
     public void menuItemDeleteRoom(ActionEvent actionEvent) {
-        TextInputDialog dialog = new TextInputDialog();
+        ChoiceDialog dialog = new ChoiceDialog();
         dialog.setTitle("Raum löschen");
         dialog.setHeaderText("");
-        dialog.setContentText("Bitte Raumnamen eingeben");
+        for (Object item : listRooms.getItems()) {
+            if (!item.equals("Lobby")) {
+                dialog.getItems().add(item);
+            }
+        }
+        dialog.setContentText("Bitte Raumnamen auswählen");
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
-            if(!result.get().equals("Lobby")){
+            if (!result.isPresent()) {
                 server.deleteRoom(result.get());
                 listRooms.getItems().clear();
                 server.populateList(server.getRoomNames(), listRooms);
@@ -135,13 +147,12 @@ public class ServerController implements Initializable, Runnable {
         }
     }
 
-    // todo
-    public void listRoomsClicked(){
+    // todo rauminfos anzeigen
+    public void listRoomsClicked() {
         Object item = listRooms.getSelectionModel().getSelectedItem();
-        if(item != null){
+        if (item != null) {
             server.setSelectedRoom(item.toString());
-        }
-        else{
+        } else {
             server.setSelectedRoom("");
         }
     }

@@ -16,8 +16,8 @@ public enum Mode {
     ROOM_CREATE,            // for server
     ROOM_CREATE_PRIVATE,    // for server
     ROOM_JOIN,              // for server
-    USER_TRANSMIT,          // for client
     ROOM_TRANSMIT,          // for client
-    UPDATE_ROOM             // for client
+    UPDATE_ROOM,            // for client
+    USER_TRANSMIT           // for client
 }
 

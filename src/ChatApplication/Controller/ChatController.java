@@ -26,7 +26,7 @@ public class ChatController implements Initializable {
 
 
     private final Client client;
-    private ArrayList<Stage> activeStages = new ArrayList<Stage>();
+    private final ArrayList<Stage> activeStages = new ArrayList<Stage>();
 
     public ChatController(Client client) {
         this.client = client;
@@ -77,7 +77,7 @@ public class ChatController implements Initializable {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Passwort ändern");
         dialog.setHeaderText("");
-        dialog.setContentText("Bitte neuen Passwort eingeben");
+        dialog.setContentText("Bitte neues Passwort eingeben");
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
             client.sendObject(new Message(client.getName(), Mode.CHANGE_PASSWORD, result.get()));
@@ -90,25 +90,24 @@ public class ChatController implements Initializable {
         dialog.setHeaderText("");
         dialog.setContentText("Bitte Raumnamen eingeben");
         Optional<String> result = dialog.showAndWait();
-        if (result.isPresent()){
+        if (result.isPresent()) {
             createRoom(result.get());
         }
     }
 
-    public void menuItemCreatePrivateRoom(){
+    public void menuItemCreatePrivateRoom() {
         ChoiceDialog dialog = new ChoiceDialog();
         dialog.setTitle("Privaten Raum erstellen");
         dialog.setHeaderText("");
-        for(Object item : listUser.getItems()){
+        for (Object item : listUser.getItems()) {
             if (!item.equals(client.getName())) {
                 dialog.getItems().add(item);
             }
         }
         dialog.setContentText("Bitte Namen auswählen");
         Optional<String> result = dialog.showAndWait();
-        if (result.isPresent()){
-            //System.out.println(activeStages);
-            if(!activeStage(result.get())){
+        if (result.isPresent()) {
+            if (!isActiveStage(result.get())) {
                 createPrivateRoom(result.get());
             }
         }
@@ -124,15 +123,13 @@ public class ChatController implements Initializable {
         }
     }
 
-    public void listUsersClicked(){
+    public void listUsersClicked() {
         Object item = listUser.getSelectionModel().getSelectedItem();
-        if(item != null){
+        if (item != null) {
             client.setSelectedUser(item.toString());
-        }
-        else{
+        } else {
             client.setSelectedUser("");
         }
-        System.out.println(client.getSelectedUser());   //todo
     }
 
     // sends a message to the server
@@ -147,26 +144,27 @@ public class ChatController implements Initializable {
     // sends a logout request to the server
     public void logoutRequest() {
         client.sendObject(new Message(client.getName(), Mode.LOGOUT, client.getActiveRoom(),
-                client.getName()+ "hat den Chat verlassen."));
+                client.getName() + "hat den Chat verlassen."));
     }
 
-    // todo
-    public void createRoom(String roomName){
+    // creates a new community room
+    public void createRoom(String roomName) {
         client.sendObject(new Message(client.getName(), Mode.ROOM_CREATE, client.getActiveRoom(), roomName));
     }
 
-    public void createPrivateRoom(String otherClient){
+    // opens a new private chat in an new window
+    public void createPrivateRoom(String otherClient) {
         newWindow(otherClient);
     }
 
-    private void newWindow(String otherClient){
+    // creates a new window for a private chat
+    private void newWindow(String otherClient) {
         try {
             PrivateChatController controller = new PrivateChatController(client.getName(), otherClient);
             Stage stage = new Stage();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../Resource/privateChat.fxml"));
             loader.setController(controller);
             stage.setOnCloseRequest(e -> {
-                System.out.println("privater chat geschlossen");    //todo
                 controller.logoutRequest();
                 stage.close();
                 activeStages.remove(stage);
@@ -181,9 +179,10 @@ public class ChatController implements Initializable {
         }
     }
 
-    private boolean activeStage(String name){
+    // checks if the name is the active stage
+    private boolean isActiveStage(String name) {
         for (Stage s : activeStages) {
-            if (s.getTitle().equals("Privater Chat mit " + name)){
+            if (s.getTitle().equals("Privater Chat mit " + name)) {
                 return true;
             }
         }

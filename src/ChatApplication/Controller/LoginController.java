@@ -77,7 +77,6 @@ public class LoginController implements Initializable {
 
             // show new window
             currentWindow.setOnCloseRequest(e -> {
-                System.out.println("normaler chat geschlossen");    //todo
                 controller.logoutRequest();
                 currentWindow.close();
             });

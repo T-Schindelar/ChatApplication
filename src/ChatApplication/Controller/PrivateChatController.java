@@ -27,8 +27,7 @@ public class PrivateChatController implements Initializable {
             this.otherClient = otherClient;
             this.client = new Client(5000);
             client.setName(clientName);
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -45,8 +44,7 @@ public class PrivateChatController implements Initializable {
                 if (keyEvent.getCode() == KeyCode.ENTER)
                     sendMessage();
             });
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -64,7 +62,7 @@ public class PrivateChatController implements Initializable {
     // sends a logout request to the server
     public void logoutRequest() {
         client.sendObject(new Message(client.getName(), Mode.LOGOUT, otherClient,
-                client.getName()+ "hat den Chat verlassen."));
+                client.getName() + "hat den Chat verlassen."));
     }
 
 

@@ -3,6 +3,7 @@
 /workspace.xml
 
 # Compiled class file
+/out/
 *.class
 
 # Log file
@@ -21,6 +22,7 @@
 *.zip
 *.tar.gz
 *.rar
+*.db
 
 # iml file
 *.iml
