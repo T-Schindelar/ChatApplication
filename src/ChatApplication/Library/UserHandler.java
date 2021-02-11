@@ -33,7 +33,6 @@ public class UserHandler implements Runnable {
             try {
                 // gets client messages
                 Message message = (Message) user.getOin().readObject();
-                System.out.println(message + " " + message.getRoom());      // todo
 
                 // checks message mode
                 switch (message.getMode()) {

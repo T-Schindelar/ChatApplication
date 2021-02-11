@@ -71,6 +71,7 @@ public class Client {
                 listUser, this));
         return this.thread;
     }
+
     public Thread createThreadReceivedMessagesHandler(TextArea txtAreaChat) {
         this.thread = new Thread(new ReceivedMessagesHandler(oin, txtAreaChat, this));
         return this.thread;
@@ -83,7 +84,6 @@ public class Client {
             oin.close();
             socket.close();
             Thread.sleep(20000);    // sleeps 20 seconds
-            thread.interrupt();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -102,17 +102,20 @@ public class Client {
     public String getName() {
         return name;
     }
+
     public int getPort() {
         return port;
     }
+
     public String getHost() {
         return host;
     }
+
     public String getActiveRoom() {
         return activeRoom;
     }
 
-    public String getSelectedUser(){
+    public String getSelectedUser() {
         return selectedUser;
     }
 
@@ -120,21 +123,12 @@ public class Client {
     public void setName(String name) {
         this.name = name;
     }
+
     public void setActiveRoom(String name) {
         this.activeRoom = name;
     }
 
-    public void setSelectedUser(String name){
+    public void setSelectedUser(String name) {
         this.selectedUser = name;
-    }
-
-    // todo: löschen
-    @Override
-    public String toString() {
-        return "Client{" +
-                "host='" + host + '\'' +
-                ", port=" + port +
-                ", name='" + name + '\'' +
-                '}';
     }
 }

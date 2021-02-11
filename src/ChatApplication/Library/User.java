@@ -41,9 +41,11 @@ public class User {
     public ObjectInputStream getOin() {
         return oin;
     }
+
     public ObjectOutputStream getOout() {
         return oout;
     }
+
     public String getName() {
         return name;
     }

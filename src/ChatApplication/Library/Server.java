@@ -50,7 +50,6 @@ public class Server {
             while (true) {
                 Mode mode = (Mode) client.getOin().readObject();
                 Account loginAccount = (Account) client.getOin().readObject();
-                System.out.println(mode + " : " + loginAccount);        //todo
                 // registration
                 boolean registrationSuccessful = true;
                 switch (mode) {
@@ -92,7 +91,6 @@ public class Server {
                     default:
                         client.setName(loginAccount.getName());
                         privateClients.add(client);
-                        System.out.println("default");  //todo
                         return;
                 }
             }
@@ -253,7 +251,7 @@ public class Server {
         }
     }
 
-    // todo nutzer des raums verwalten
+    // todo nutzer des raums verwalten nach änderung
     // changes room name
     public void changeRoomName(String room, String newName, ListView list){
         if(!this.selectedRoom.isEmpty()){
@@ -416,25 +414,17 @@ public class Server {
     // disconnects a client from the clients list
     public void disconnectUser(String name) {
         User client = getClientFromClientsByName(name);
-        String room = getRoomNameForUser(client);
         sendMessage(client, new Message("Server", Mode.DISCONNECT, "Sie wurden vom Server ausgschlossen!\n" +
                 "Die Anwendung schließt sich in 20 Sekunden!\n"));
-        removeUser(client);
-        broadcastToRoom(new Message("Server", Mode.MESSAGE, room, name + " hat den Chat verlassen."));
-        broadcastRoomUsers(room);
     }
 
     // bans a account and removes the client
     public void banAccount(String name) {
         User client = getClientFromClientsByName(name);
-        String room = getRoomNameForUser(client);
-        removeUser(client);
         removeAccount(getAccountFromAccountsByName(name));
         service.updateBanned(name, true);
         sendMessage(client, new Message("Server", Mode.DISCONNECT, "Ihr Benutzerkonto wurde gesperrt!\n" +
                 "Die Anwendung schließt sich in 20 Sekunden!\n"));
-        broadcastToRoom(new Message("Server", Mode.MESSAGE, room, name + " hat den Chat verlassen."));
-        broadcastRoomUsers(room);
     }
 
 

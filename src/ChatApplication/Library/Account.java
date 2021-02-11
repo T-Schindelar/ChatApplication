@@ -5,7 +5,7 @@ import java.util.Objects;
 public class Account implements java.io.Serializable {
     private String name;
     private final String password;
-    private boolean banned;       //todo make final again
+    private boolean banned;
 
     public Account(String name, String password, boolean banned) {
         this.name = name;
@@ -23,9 +23,11 @@ public class Account implements java.io.Serializable {
     public String getName() {
         return name;
     }
+
     public String getPassword() {
         return password;
     }
+
     public boolean isBanned() {
         return banned;
     }
@@ -34,7 +36,10 @@ public class Account implements java.io.Serializable {
     public void setName(String name) {
         this.name = name;
     }
-    public void setBanned(boolean value) { this.banned = value; }
+
+    public void setBanned(boolean value) {
+        this.banned = value;
+    }
 
 
     @Override
@@ -48,15 +53,5 @@ public class Account implements java.io.Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(name, password, banned);
-    }
-
-    // ToDo: löschen
-    @Override
-    public String toString() {
-        return "Account{" +
-                "name='" + name + '\'' +
-                ", password='" + password + '\'' +
-                ", banned=" + banned +
-                '}';
     }
 }

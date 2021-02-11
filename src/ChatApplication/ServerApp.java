@@ -9,7 +9,7 @@ import javafx.stage.Stage;
 public class ServerApp extends Application {
 
     @Override
-    public void start(Stage primaryStage) throws Exception{
+    public void start(Stage primaryStage) throws Exception {
         // get root
         Parent serverWindowRoot = FXMLLoader.load(getClass().getResource("Resource/serverWindow.fxml"));
 

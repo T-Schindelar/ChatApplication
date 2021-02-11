@@ -58,15 +58,17 @@ class ReceivedMessagesHandler implements Runnable {
                                     listRooms);
                             break;
                         case DISCONNECT:
+                            client.sendObject(new Message(client.getName(), Mode.LOGOUT, client.getActiveRoom(),
+                                    client.getName()+ "hat den Chat verlassen."));
                             txtFieldState.clear();
                             txtFieldState.setText("Keine Verbindung zum Server.");
                             addMessageToTxtAreaChat(message);
                             client.disconnect();
-                            break;
+                            System.exit(0);
                         case UPDATE_ROOM:
                             this.client.setActiveRoom(message.getText());
-                            txtFieldState.setText(String.format("Verbunden mit %s:%d als %s in Raum %s", client.getHost(), client.getPort(),
-                                    client.getName(), client.getActiveRoom()));
+                            txtFieldState.setText(String.format("Verbunden mit %s:%d als %s in Raum %s",
+                                    client.getHost(), client.getPort(), client.getName(), client.getActiveRoom()));
                             break;
                         default:
                             break;
@@ -89,7 +91,6 @@ class ReceivedMessagesHandler implements Runnable {
         }
     }
 
-    // todo liste sortiert ausgeben
     public void populateList(String[] list, ListView object) {
         if (object == null) {
             return;
