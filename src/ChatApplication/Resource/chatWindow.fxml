@@ -50,7 +50,7 @@
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </GridPane.margin>
       </Label>
-      <TextField fx:id="txtFieldState" focusTraversable="false" layoutX="20.0" layoutY="474.0" style="-fx-background-color: none;" GridPane.columnSpan="2" GridPane.rowIndex="1">
+      <TextField fx:id="txtFieldState" editable="false" focusTraversable="false" layoutX="20.0" layoutY="474.0" style="-fx-background-color: none;" GridPane.columnSpan="2" GridPane.rowIndex="1">
          <GridPane.margin>
             <Insets bottom="10.0" left="10.0" right="10.0" top="30.0" />
          </GridPane.margin>

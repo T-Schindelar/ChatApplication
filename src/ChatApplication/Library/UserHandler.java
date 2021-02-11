@@ -1,5 +1,6 @@
 package ChatApplication.Library;
 
+import javafx.application.Platform;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -60,11 +61,19 @@ public class UserHandler implements Runnable {
                     case CHANGE_NAME:
                         String oldName = user.getName();
                         String newName = message.getText();
-                        server.changeAccountName(oldName, newName);
-                        server.populateList(server.getClientNames(), listUser); //geändert
-                        server.broadcastToRoom(new Message("Server", Mode.MESSAGE, message.getRoom(),
-                                oldName + " hat den Namen zu " + newName + " geändert."));
-                        server.broadcastRoomUsers(message.getRoom());
+                        if(!server.nameInUse(newName)){
+                            server.changeAccountName(oldName, newName);
+                            server.populateList(server.getClientNames(), listUser); //geändert
+                            Message m = new Message("Server", Mode.MESSAGE, message.getRoom(),
+                                    oldName + " hat den Namen zu " + newName + " geändert.");
+                            server.broadcastToRoom(m);
+                            server.broadcastRoomUsers(message.getRoom());
+                            addMessageToTxtAreaServerlog(m);
+                        }
+                        else{
+                            server.sendMessage(user, new Message("Server", Mode.CHANGE_NAME, message.getRoom(),
+                                    oldName));
+                        }
                         break;
                     case CHANGE_PASSWORD:
                         server.changeAccountPassword(user.getName(), message.getText());
@@ -81,7 +90,12 @@ public class UserHandler implements Runnable {
                         if(!server.getRoomsKeySet().contains(newRoom)){
                             server.addRoom(newRoom);
                             server.addToRoom(message);
-                            listRooms.getItems().add(newRoom);
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    listRooms.getItems().add(newRoom);
+                                }
+                            });
                             addMessageToTxtAreaServerlog(new Message(message.getClient(), Mode.MESSAGE,
                                     String.format("%s hat Raum %s erstellt", message.getClient(), newRoom)));
                         }

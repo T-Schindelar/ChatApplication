@@ -129,11 +129,9 @@ public class ServerController implements Initializable, Runnable {
         dialog.setContentText("Bitte Raumnamen auswählen");
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
-            if (!result.isPresent()) {
-                server.deleteRoom(result.get());
-                listRooms.getItems().clear();
-                server.populateList(server.getRoomNames(), listRooms);
-            }
+            server.deleteRoom(result.get());
+            listRooms.getItems().clear();
+            server.populateList(server.getRoomNames(), listRooms);
         }
     }
 
