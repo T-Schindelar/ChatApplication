@@ -57,6 +57,11 @@ class ReceivedMessagesHandler implements Runnable {
                             populateList(message.getText().substring(1, message.getText().length() - 1).split(","),
                                     listRooms);
                             break;
+                        case CHANGE_NAME:
+                            client.setName(message.getText());
+                            txtFieldState.setText(String.format("Verbunden mit %s:%d als %s in Raum %s", client.getHost(), client.getPort(),
+                                    client.getName(), client.getActiveRoom()));
+                            break;
                         case DISCONNECT:
                             txtFieldState.clear();
                             txtFieldState.setText("Keine Verbindung zum Server.");

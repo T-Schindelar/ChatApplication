@@ -50,7 +50,6 @@ public class Server {
             while (true) {
                 Mode mode = (Mode) client.getOin().readObject();
                 Account loginAccount = (Account) client.getOin().readObject();
-                System.out.println(mode + " : " + loginAccount);        //todo
                 // registration
                 boolean registrationSuccessful = true;
                 switch (mode) {
@@ -92,7 +91,6 @@ public class Server {
                     default:
                         client.setName(loginAccount.getName());
                         privateClients.add(client);
-                        System.out.println("default");  //todo
                         return;
                 }
             }
@@ -119,6 +117,10 @@ public class Server {
         client.setName(newName);
         service.updateName(oldName, newName);
         accounts = service.getAllAccounts();
+    }
+
+    public boolean nameInUse(String name){
+        return service.nameInUse(name);
     }
 
     // changes account password in the database
@@ -257,6 +259,9 @@ public class Server {
     // changes room name
     public void changeRoomName(String room, String newName, ListView list){
         if(!this.selectedRoom.isEmpty()){
+            for(User client : rooms.get(room)){
+                sendMessage(client, new Message("Server", Mode.UPDATE_ROOM, newName));
+            }
             rooms.put(newName, rooms.remove(room));
             broadcastRooms();
             this.selectedRoom = "";

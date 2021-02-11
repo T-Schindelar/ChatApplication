@@ -97,6 +97,21 @@ public class AccountDbService {
         }
     }
 
+    public boolean nameInUse(String name){
+        try{
+            ResultSet result = statement.executeQuery(String.format("SELECT * FROM Accounts WHERE Name = '%s'", name));
+            if(result.next()){
+                return true;
+            }
+            else{
+                return false;
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return true;
+    }
+
     public void close() {
         try {
             connection.close();

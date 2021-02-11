@@ -137,9 +137,11 @@ public class ChatController implements Initializable {
 
     // sends a message to the server
     public void sendMessage() {
-        client.sendObject(new Message(client.getName(), Mode.MESSAGE, client.getActiveRoom(), txtFieldMessage.getText()
-        ));
-        txtFieldMessage.clear();
+        if(!txtFieldMessage.getText().equals("")){
+            client.sendObject(new Message(client.getName(), Mode.MESSAGE, client.getActiveRoom(), txtFieldMessage.getText()
+            ));
+            txtFieldMessage.clear();
+        }
     }
 
     // sends a logout request to the server
