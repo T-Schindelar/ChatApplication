@@ -83,7 +83,7 @@ public class Client {
             oin.close();
             socket.close();
             Thread.sleep(20000);    // sleeps 20 seconds
-            thread.interrupt();
+            //thread.interrupt();
         } catch (Exception e) {
             e.printStackTrace();
         }
