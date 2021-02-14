@@ -255,7 +255,6 @@ public class Server {
         }
     }
 
-    // todo nutzer des raums verwalten nach änderung
     // changes room name
     public void changeRoomName(String room, String newName, ListView list){
         if(!this.selectedRoom.isEmpty()){

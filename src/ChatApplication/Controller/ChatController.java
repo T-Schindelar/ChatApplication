@@ -54,7 +54,7 @@ public class ChatController implements Initializable {
         dialog.setHeaderText("");
         dialog.setContentText("Bitte neuen Namen eingeben");
         Optional<String> result = dialog.showAndWait();
-        if (result.isPresent()) {
+        if (result.isPresent() && !result.get().isEmpty()) {
             client.sendObject(new Message(client.getName(), Mode.CHANGE_NAME, client.getActiveRoom(), result.get()));
             client.setName(result.get());
             txtFieldState.setText(String.format("Verbunden mit %s:%d als %s in Raum %s", client.getHost(), client.getPort(),
@@ -79,7 +79,7 @@ public class ChatController implements Initializable {
         dialog.setHeaderText("");
         dialog.setContentText("Bitte neues Passwort eingeben");
         Optional<String> result = dialog.showAndWait();
-        if (result.isPresent()) {
+        if (result.isPresent() && !result.get().isEmpty()) {
             client.sendObject(new Message(client.getName(), Mode.CHANGE_PASSWORD, result.get()));
         }
     }
@@ -90,7 +90,7 @@ public class ChatController implements Initializable {
         dialog.setHeaderText("");
         dialog.setContentText("Bitte Raumnamen eingeben");
         Optional<String> result = dialog.showAndWait();
-        if (result.isPresent()) {
+        if (result.isPresent() && !result.get().isEmpty()) {
             createRoom(result.get());
         }
     }
@@ -134,7 +134,7 @@ public class ChatController implements Initializable {
 
     // sends a message to the server
     public void sendMessage() {
-        if(!txtFieldMessage.getText().equals("")){
+        if (!txtFieldMessage.getText().equals("")) {
             client.sendObject(new Message(client.getName(), Mode.MESSAGE, client.getActiveRoom(), txtFieldMessage.getText()
             ));
             txtFieldMessage.clear();

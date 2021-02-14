@@ -98,7 +98,7 @@ public class ServerController implements Initializable, Runnable {
         dialog.setHeaderText("");
         dialog.setContentText("Bitte Raumnamen eingeben");
         Optional<String> result = dialog.showAndWait();
-        if (result.isPresent()) {
+        if (result.isPresent() && !result.get().isEmpty()) {
             server.addRoom(result.get());
             txtAreaServerlog.setText(txtAreaServerlog.getText() + new Message("Server", Mode.MESSAGE,
                     "neuer Raum: " + result.get() + " wurde angelegt.") + "\n");
@@ -145,7 +145,6 @@ public class ServerController implements Initializable, Runnable {
         }
     }
 
-    // todo rauminfos anzeigen
     public void listRoomsClicked() {
         Object item = listRooms.getSelectionModel().getSelectedItem();
         if (item != null) {

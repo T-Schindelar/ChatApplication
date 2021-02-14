@@ -61,16 +61,15 @@ public class UserHandler implements Runnable {
                     case CHANGE_NAME:
                         String oldName = user.getName();
                         String newName = message.getText();
-                        if(!server.nameInUse(newName)){
+                        if (!server.nameInUse(newName)) {
                             server.changeAccountName(oldName, newName);
-                            server.populateList(server.getClientNames(), listUser); //geändert
-                            Message m = new Message("Server", Mode.MESSAGE, message.getRoom(),
+                            server.populateList(server.getClientNames(), listUser);
+                            Message newMessage = new Message("Server", Mode.MESSAGE, message.getRoom(),
                                     oldName + " hat den Namen zu " + newName + " geändert.");
-                            server.broadcastToRoom(m);
+                            server.broadcastToRoom(newMessage);
                             server.broadcastRoomUsers(message.getRoom());
-                            addMessageToTxtAreaServerlog(m);
-                        }
-                        else{
+                            addMessageToTxtAreaServerlog(newMessage);
+                        } else {
                             server.sendMessage(user, new Message("Server", Mode.CHANGE_NAME, message.getRoom(),
                                     oldName));
                         }
@@ -87,7 +86,7 @@ public class UserHandler implements Runnable {
                         break;
                     case ROOM_CREATE:
                         String newRoom = message.getText();
-                        if(!server.getRoomsKeySet().contains(newRoom)){
+                        if (!server.getRoomsKeySet().contains(newRoom)) {
                             server.addRoom(newRoom);
                             server.addToRoom(message);
                             Platform.runLater(new Runnable() {

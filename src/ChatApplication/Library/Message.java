@@ -30,12 +30,15 @@ public class Message implements java.io.Serializable {
     public String getClient() {
         return client;
     }
+
     public Mode getMode() {
         return mode;
     }
+
     public String getText() {
         return text;
     }
+
     public String getRoom() {
         return room;
     }
